@@ -21,8 +21,8 @@ protocol SearchViewModelProtocol {
 final class SearchViewController: UIViewController {
     
     private let viewModel: SearchViewModelProtocol
-    
     private let tableView = UITableView()
+    private let searchResultCellIdentifier = "searchResultCellIdentifier"
     
     // WIP: Get rid of force-unwrapping
     private var searchController: UISearchController!
@@ -73,7 +73,7 @@ extension SearchViewController: UISearchResultsUpdating {
         guard searchController.isActive,
                 let text = searchController.searchBar.text,
                 !text.isEmpty else { return }
-        self.viewModel.searchQueryChanged(text: text)
+        viewModel.searchQueryChanged(text: text)
     }
 }
 
@@ -87,16 +87,17 @@ extension SearchViewController: UISearchBarDelegate {
 
 extension SearchViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.viewModel.searchResults.count
+        return viewModel.searchResults.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
-        guard indexPath.item < self.viewModel.searchResults.count else {
+        let cell = tableView.dequeueReusableCell(withIdentifier: searchResultCellIdentifier, for: indexPath)
+
+        guard indexPath.item < viewModel.searchResults.count else {
             return cell
         }
         
-        let item = self.viewModel.searchResults[indexPath.item]
+        let item = viewModel.searchResults[indexPath.item]
         cell.textLabel?.text = item.name
         
         return cell
