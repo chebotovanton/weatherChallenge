@@ -54,8 +54,8 @@ final class SearchViewController: UIViewController {
         navigationItem.hidesSearchBarWhenScrolling = false
     }
     
-    // WIP: Register cells
     private func setupTableView() {
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: searchResultCellIdentifier)
         tableView.dataSource = self
         tableView.delegate = self
         
