@@ -14,12 +14,7 @@ protocol SearchRouterProtocol {
 // WIP: Unit tests
 final class SearchViewModel: SearchViewModelProtocol {
     var viewState: Observable<SearchViewState> = Observable(
-        .loaded(
-            [
-                SearchResult(name: "one"),
-                SearchResult(name: "two")
-            ]
-        )
+        .error("Start typing to search")
     )
     
     private let router: SearchRouterProtocol

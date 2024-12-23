@@ -30,6 +30,7 @@ protocol LocationSearchServiceProtocol {
 }
 
 final class LocationSearchService: LocationSearchServiceProtocol {
+    // TODO: Would be nice not to keep the keys openly
     private let apiKey = "3e5afd29dd22c6c30c3f02832b405045"
     private let urlFormat = "http://api.openweathermap.org/geo/1.0/direct?q=%@&limit=%i&appid=%@"
     
@@ -46,6 +47,7 @@ final class LocationSearchService: LocationSearchServiceProtocol {
     }
     
     func search(query: String) async -> Result<[SearchResult], LocationSearchError> {
+        // TODO: May be worthy to introduce a UrlFormatter class later, to have this logic covered with unit tests
         let urlString = String(format: urlFormat, query, resultsLimit, apiKey)
         
         guard let url = URL(string: urlString) else {
@@ -58,6 +60,10 @@ final class LocationSearchService: LocationSearchServiceProtocol {
         
         guard let searchResults = try? JSONDecoder().decode([SearchResult].self, from: data) else {
             return .failure(.wrongResponseFormat)
+        }
+        
+        guard searchResults.count > 0 else {
+            return .failure(.emptyResponse)
         }
         
         return .success(searchResults)

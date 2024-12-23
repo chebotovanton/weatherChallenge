@@ -9,6 +9,9 @@ import UIKit
 
 struct SearchResult: Equatable, Decodable {
     let name: String
+    let country: String
+    let lat: Double
+    let lon: Double
 }
 
 enum SearchViewState: Equatable {
@@ -24,6 +27,7 @@ protocol SearchViewModelProtocol {
     var viewState: Observable<SearchViewState> { get }
 }
 
+// TODO: I know it's possible to achieve a similar result with UISearchController, but I haven't worked with it in a while, and this crude manual approach seems to be working ok for our needs
 final class SearchViewController: UIViewController {
     
     private let viewModel: SearchViewModelProtocol
@@ -32,7 +36,7 @@ final class SearchViewController: UIViewController {
     private let tableView = UITableView()
     private let searchResultCellIdentifier = "searchResultCellIdentifier"
     
-    private var searchController: UISearchController?
+    private var searchBar = UISearchBar()
     
     init(viewModel: SearchViewModelProtocol) {
         self.viewModel = viewModel
@@ -45,22 +49,24 @@ final class SearchViewController: UIViewController {
     }
     
     override func viewDidLoad() {
-        searchController = UISearchController(searchResultsController: self)
-        
         super.viewDidLoad()
         
         setupSearchController()
         setupTableView()
         setupAccessoryViews()
         observeSearchResults()
+        
+        self.updateViewState(viewState: viewModel.viewState.value)
     }
     
     private func setupSearchController() {
-        searchController?.delegate = self
-        searchController?.searchResultsUpdater = self
-        searchController?.searchBar.delegate = self
-        navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
+        searchBar.delegate = self
+        
+        self.view.addSubview(searchBar)
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
+        searchBar.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        searchBar.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
     }
     
     private func setupTableView() {
@@ -69,19 +75,21 @@ final class SearchViewController: UIViewController {
         tableView.delegate = self
         
         self.view.addSubview(tableView)
-        self.tableView.translatesAutoresizingMaskIntoConstraints = false
-        self.tableView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
-        self.tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        self.tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-        self.tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
     }
     
     private func setupAccessoryViews() {
         self.view.addSubview(errorMessageView)
+        errorMessageView.translatesAutoresizingMaskIntoConstraints = false
         errorMessageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         errorMessageView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
         
         self.view.addSubview(activityIndicator)
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         activityIndicator.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         activityIndicator.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
         activityIndicator.backgroundColor = .black
@@ -98,6 +106,7 @@ final class SearchViewController: UIViewController {
     private func updateViewState(viewState: SearchViewState) {
         switch viewState {
         case .loading:
+            // WIP: This isn't working as expected
             activityIndicator.isHidden = false
             activityIndicator.startAnimating()
             errorMessageView.isHidden = true
@@ -116,21 +125,19 @@ final class SearchViewController: UIViewController {
     }
 }
 
-extension SearchViewController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        guard searchController.isActive,
-                let text = searchController.searchBar.text,
-                !text.isEmpty else { return }
-        viewModel.searchQueryChanged(text: text)
-    }
-}
-
-extension SearchViewController: UISearchControllerDelegate {
-    // WIP: Do I need something here?
-}
-
 extension SearchViewController: UISearchBarDelegate {
-    // WIP: Do I need something here?
+    // WIP: This is the wrong method to have, silly!
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        if let queryText = searchBar.text, !queryText.isEmpty {
+            viewModel.searchQueryChanged(text: queryText)
+        }
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if let queryText = searchBar.text, !queryText.isEmpty {
+            viewModel.searchQueryChanged(text: queryText)
+        }
+    }
 }
 
 extension SearchViewController: UITableViewDataSource {
@@ -145,10 +152,16 @@ extension SearchViewController: UITableViewDataSource {
             return cell
         }
         
-        let item = viewModel.searchResults[indexPath.item]
-        cell.textLabel?.text = item.name
+        let searchResult = viewModel.searchResults[indexPath.item]
+        configureCell(cell: cell, searchResult: searchResult)
         
         return cell
+    }
+    
+    private func configureCell(cell: UITableViewCell, searchResult: SearchResult) {
+        cell.textLabel?.text = searchResult.name
+        // WIP: This ain't working. Introduce a custom cell?
+        cell.detailTextLabel?.text = searchResult.country
     }
 }
 
@@ -168,4 +181,4 @@ private extension SearchViewModelProtocol {
     }
 }
 
-// WIP: Seems like this takes away my table view and all other subviews, check the UISearchController documentation one more time
+// WIP: Pre-fill the table view with the favourites? Instead of tabbar?
