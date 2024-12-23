@@ -11,11 +11,13 @@ protocol SearchRouterProtocol {
 
 // WIP: Unit tests
 final class SearchViewModel: SearchViewModelProtocol {
-    var searchResults: Observable<[SearchResult]> = Observable(
-        [
-            SearchResult(name: "one"),
-            SearchResult(name: "two")
-        ]
+    var viewState: Observable<SearchViewState> = Observable(
+        .loaded(
+            [
+                SearchResult(name: "one"),
+                SearchResult(name: "two")
+            ]
+        )
     )
     
     private let router: SearchRouterProtocol

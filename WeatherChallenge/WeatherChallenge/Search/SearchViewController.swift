@@ -11,11 +11,17 @@ struct SearchResult: Equatable {
     let name: String
 }
 
+enum SearchViewState: Equatable {
+    case loading
+    case error(String)
+    case loaded([SearchResult])
+}
+
 protocol SearchViewModelProtocol {
     func searchQueryChanged(text: String)
     func searchResultSelected(searchResult: SearchResult)
  
-    var searchResults: Observable<[SearchResult]> { get }
+    var viewState: Observable<SearchViewState> { get }
 }
 
 final class SearchViewController: UIViewController {
@@ -68,10 +74,23 @@ final class SearchViewController: UIViewController {
     }
     
     private func observeSearchResults() {
-        viewModel.searchResults.subscribe(observer: self) { newValue, oldValue in
-            if newValue != oldValue {
-                self.tableView.reloadData()
-            }
+        viewModel.viewState.subscribe(observer: self) { [weak self] newValue, oldValue in
+            guard let self = self, newValue != oldValue else { return }
+            self.updateViewState(viewState: newValue)
+        }
+    }
+    
+    private func updateViewState(viewState: SearchViewState) {
+        switch viewState {
+        case .loading:
+            // WIP: show activity indicator
+            tableView.isHidden = true
+        case .error(let string):
+            // WIP: Show error message
+            tableView.isHidden = true
+        case .loaded(let array):
+            tableView.isHidden = false
+            tableView.reloadData()
         }
     }
 }
@@ -95,17 +114,17 @@ extension SearchViewController: UISearchBarDelegate {
 
 extension SearchViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.searchResults.value.count
+        return viewModel.searchResults.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: searchResultCellIdentifier, for: indexPath)
 
-        guard indexPath.item < viewModel.searchResults.value.count else {
+        guard indexPath.item < viewModel.searchResults.count else {
             return cell
         }
         
-        let item = viewModel.searchResults.value[indexPath.item]
+        let item = viewModel.searchResults[indexPath.item]
         cell.textLabel?.text = item.name
         
         return cell
@@ -114,9 +133,16 @@ extension SearchViewController: UITableViewDataSource {
 
 extension SearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let searchResults = viewModel.searchResults.value
+        let searchResults = viewModel.searchResults
         guard indexPath.item < searchResults.count else { return }
         let searchResult = searchResults[indexPath.item]
         viewModel.searchResultSelected(searchResult: searchResult)
+    }
+}
+
+private extension SearchViewModelProtocol {
+    var searchResults: [SearchResult] {
+        guard case .loaded(let searchResults) = viewState.value else { return [] }
+        return searchResults
     }
 }
