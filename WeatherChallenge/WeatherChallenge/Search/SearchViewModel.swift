@@ -24,6 +24,8 @@ final class SearchViewModel: SearchViewModelProtocol {
     
     private let router: SearchRouterProtocol
     private let searchService: LocationSearchServiceProtocol
+    private var debounceTimer: Timer?
+
     
     init(
         router: SearchRouterProtocol,
@@ -34,23 +36,28 @@ final class SearchViewModel: SearchViewModelProtocol {
     }
     
     func searchQueryChanged(text: String) {
-        // WIP: Debounce calls here
-        self.viewState.value = .loading
-        Task { [weak self] in
+        debounceTimer?.invalidate()
+        
+        debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
             guard let self = self else { return }
-            let result = await self.searchService.search(query: text)
             
-            let newState: SearchViewState = {
-                switch result {
-                case .success(let searchResults):
-                    return .loaded(searchResults)
-                case .failure(let error):
-                    return .error(error.errorDescription)
+            self.viewState.value = .loading
+            Task { [weak self] in
+                guard let self = self else { return }
+                let result = await self.searchService.search(query: text)
+                
+                let newState: SearchViewState = {
+                    switch result {
+                    case .success(let searchResults):
+                        return .loaded(searchResults)
+                    case .failure(let error):
+                        return .error(error.errorDescription)
+                    }
+                }()
+                
+                DispatchQueue.main.async { [weak self] in
+                    self?.viewState.value = newState
                 }
-            }()
-            
-            DispatchQueue.main.async { [weak self] in
-                self?.viewState.value = newState
             }
         }
     }
