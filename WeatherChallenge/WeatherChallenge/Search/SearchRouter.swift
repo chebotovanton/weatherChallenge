@@ -17,7 +17,7 @@ final class SearchRouter: SearchRouterProtocol {
     }
     
     func navigateToResultDetailsPage() {
-        // WIP: Destination controller should be provided by the users of the router
+        // WIP: Destination controller should be provided by the users of the router?
         let viewController = UIViewController()
         navigationController.pushViewController(viewController, animated: true)
     }
