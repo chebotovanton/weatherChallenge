@@ -15,9 +15,15 @@ final class SearchViewControllerFactory {
             navigationController: searchNavController,
             resultDetailsPageFactory: ResultDetailsPageFactory()
         )
+        
+        let urlSession = URLSession(configuration: .default)
+        
         let viewModel = SearchViewModel(
             router: router,
-            searchService: LocationSearchService()
+            searchService: LocationSearchService(
+                resultsLimit: 10,
+                urlSession: urlSession
+            )
         )
         let searchViewController = SearchViewController(viewModel: viewModel)
         searchNavController.viewControllers = [searchViewController]

@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct SearchResult: Equatable {
+struct SearchResult: Equatable, Decodable {
     let name: String
 }
 

@@ -5,6 +5,8 @@
 //  Created by Anton Chebotov on 23/12/2024.
 //
 
+import Foundation
+
 protocol SearchRouterProtocol {
     func navigateToResultDetailsPage(searchResult: SearchResult)
 }
@@ -34,13 +36,21 @@ final class SearchViewModel: SearchViewModelProtocol {
     func searchQueryChanged(text: String) {
         // WIP: Debounce calls here
         self.viewState.value = .loading
-        searchService.search(query: text) { [weak self] result in
+        Task { [weak self] in
             guard let self = self else { return }
-            switch result {
-            case .success(let searchResults):
-                self.viewState.value = .loaded(searchResults)
-            case .failure(let error):
-                self.viewState.value = .error(error.errorDescription)
+            let result = await self.searchService.search(query: text)
+            
+            let newState: SearchViewState = {
+                switch result {
+                case .success(let searchResults):
+                    return .loaded(searchResults)
+                case .failure(let error):
+                    return .error(error.errorDescription)
+                }
+            }()
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.viewState.value = newState
             }
         }
     }
