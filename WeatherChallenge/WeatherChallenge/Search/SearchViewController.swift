@@ -13,6 +13,7 @@ struct SearchResult {
 
 protocol SearchViewModelProtocol {
     func searchQueryChanged(text: String)
+    func searchResultSelected(searchResult: SearchResult)
  
     // WIP: Make observable
     var searchResults: [SearchResult] { get }
@@ -104,5 +105,9 @@ extension SearchViewController: UITableViewDataSource {
 }
 
 extension SearchViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard indexPath.item < viewModel.searchResults.count else { return }
+        let searchResult = viewModel.searchResults[indexPath.item]
+        viewModel.searchResultSelected(searchResult: searchResult)
+    }
 }

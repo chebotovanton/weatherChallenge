@@ -27,25 +27,11 @@ final class MainTabBarController: UITabBarController {
         super.viewDidLoad()
         
         let searchViewController = self.searchViewControllerFactory.createViewController()
-        let searchNavController = UINavigationController(rootViewController: searchViewController)
         
         let favouritesViewController = UIViewController()
         favouritesViewController.tabBarItem.title = "Favourites"
         favouritesViewController.tabBarItem.image = UIImage(systemName: "heart")
         
-        self.viewControllers = [searchNavController, favouritesViewController]
-    }
-}
-
-// WIP: Add a protocol?
-// WIP: Move to a separate class
-final class SearchViewControllerFactory {
-    func createViewController() -> UIViewController {
-        let viewModel = SearchViewModel()
-        let searchViewController = SearchViewController(viewModel: viewModel)
-        searchViewController.tabBarItem.title = "Search"
-        searchViewController.tabBarItem.image = UIImage(systemName: "magnifyingglass")
-        
-        return searchViewController
+        self.viewControllers = [searchViewController, favouritesViewController]
     }
 }
