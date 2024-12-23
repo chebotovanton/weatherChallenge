@@ -11,7 +11,10 @@ import UIKit
 final class SearchViewControllerFactory {
     func createViewController() -> UIViewController {
         let searchNavController = UINavigationController()
-        let router = SearchRouter(navigationController: searchNavController)
+        let router = SearchRouter(
+            navigationController: searchNavController,
+            resultDetailsPageFactory: ResultDetailsPageFactory()
+        )
         let viewModel = SearchViewModel(router: router)
         let searchViewController = SearchViewController(viewModel: viewModel)
         searchNavController.viewControllers = [searchViewController]

@@ -6,11 +6,17 @@
 //
 
 protocol SearchRouterProtocol {
-    func navigateToResultDetailsPage()
+    func navigateToResultDetailsPage(searchResult: SearchResult)
 }
 
 // WIP: Unit tests
 final class SearchViewModel: SearchViewModelProtocol {
+    var searchResults: Observable<[SearchResult]> = Observable(
+        [
+            SearchResult(name: "one"),
+            SearchResult(name: "two")
+        ]
+    )
     
     private let router: SearchRouterProtocol
     
@@ -20,19 +26,13 @@ final class SearchViewModel: SearchViewModelProtocol {
         self.router = router
     }
     
-    var searchResults: [SearchResult] = [
-        SearchResult(name: "one"),
-        SearchResult(name: "two")
-    ]
-    
     func searchQueryChanged(text: String) {
         // WIP: Debounce calls here
         print(text)
-        
         // WIP: How to actually find locations?
     }
     
     func searchResultSelected(searchResult: SearchResult) {
-        router.navigateToResultDetailsPage()
+        router.navigateToResultDetailsPage(searchResult: searchResult)
     }
 }

@@ -7,18 +7,24 @@
 
 import UIKit
 
+protocol ResultDetailsPageFactoryProtocol {
+    func createResultDetailsController(searchResult: SearchResult) -> UIViewController
+}
+
 final class SearchRouter: SearchRouterProtocol {
     private let navigationController: UINavigationController
+    private let resultDetailsPageFactory: ResultDetailsPageFactoryProtocol
     
     init(
-        navigationController: UINavigationController
+        navigationController: UINavigationController,
+        resultDetailsPageFactory: ResultDetailsPageFactoryProtocol
     ) {
         self.navigationController = navigationController
+        self.resultDetailsPageFactory = resultDetailsPageFactory
     }
     
-    func navigateToResultDetailsPage() {
-        // WIP: Destination controller should be provided by the users of the router?
-        let viewController = UIViewController()
+    func navigateToResultDetailsPage(searchResult: SearchResult) {
+        let viewController = resultDetailsPageFactory.createResultDetailsController(searchResult: searchResult)
         navigationController.pushViewController(viewController, animated: true)
     }
 }
