@@ -15,7 +15,10 @@ final class SearchViewControllerFactory {
             navigationController: searchNavController,
             resultDetailsPageFactory: ResultDetailsPageFactory()
         )
-        let viewModel = SearchViewModel(router: router)
+        let viewModel = SearchViewModel(
+            router: router,
+            searchService: LocationSearchService()
+        )
         let searchViewController = SearchViewController(viewModel: viewModel)
         searchNavController.viewControllers = [searchViewController]
         searchViewController.tabBarItem.title = "Search"
@@ -24,3 +27,5 @@ final class SearchViewControllerFactory {
         return searchNavController
     }
 }
+
+// TODO: This class can stay on the app level, while all the viewModel, viewController and router classes should be moved to a separate module

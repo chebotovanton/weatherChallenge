@@ -11,6 +11,7 @@ protocol ResultDetailsPageFactoryProtocol {
     func createResultDetailsController(searchResult: SearchResult) -> UIViewController
 }
 
+// WIP: Add unit tests
 final class SearchRouter: SearchRouterProtocol {
     private let navigationController: UINavigationController
     private let resultDetailsPageFactory: ResultDetailsPageFactoryProtocol

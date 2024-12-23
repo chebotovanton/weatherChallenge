@@ -85,10 +85,10 @@ final class SearchViewController: UIViewController {
         case .loading:
             // WIP: show activity indicator
             tableView.isHidden = true
-        case .error(let string):
+        case .error(_):
             // WIP: Show error message
             tableView.isHidden = true
-        case .loaded(let array):
+        case .loaded(_):
             tableView.isHidden = false
             tableView.reloadData()
         }

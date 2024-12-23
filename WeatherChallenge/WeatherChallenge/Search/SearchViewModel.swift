@@ -21,17 +21,28 @@ final class SearchViewModel: SearchViewModelProtocol {
     )
     
     private let router: SearchRouterProtocol
+    private let searchService: LocationSearchServiceProtocol
     
     init(
-        router: SearchRouterProtocol
+        router: SearchRouterProtocol,
+        searchService: LocationSearchServiceProtocol
     ) {
         self.router = router
+        self.searchService = searchService
     }
     
     func searchQueryChanged(text: String) {
         // WIP: Debounce calls here
-        print(text)
-        // WIP: How to actually find locations?
+        self.viewState.value = .loading
+        searchService.search(query: text) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let searchResults):
+                self.viewState.value = .loaded(searchResults)
+            case .failure(let error):
+                self.viewState.value = .error(error.errorDescription)
+            }
+        }
     }
     
     func searchResultSelected(searchResult: SearchResult) {
