@@ -27,6 +27,8 @@ protocol SearchViewModelProtocol {
 final class SearchViewController: UIViewController {
     
     private let viewModel: SearchViewModelProtocol
+    private let errorMessageView = UILabel()
+    private let activityIndicator = UIActivityIndicatorView(style: .large)
     private let tableView = UITableView()
     private let searchResultCellIdentifier = "searchResultCellIdentifier"
     
@@ -49,6 +51,7 @@ final class SearchViewController: UIViewController {
         
         setupSearchController()
         setupTableView()
+        setupAccessoryViews()
         observeSearchResults()
     }
     
@@ -73,6 +76,18 @@ final class SearchViewController: UIViewController {
         self.tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
     }
     
+    private func setupAccessoryViews() {
+        self.view.addSubview(errorMessageView)
+        errorMessageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        errorMessageView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
+        
+        self.view.addSubview(activityIndicator)
+        activityIndicator.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
+        activityIndicator.backgroundColor = .black
+        activityIndicator.layer.cornerRadius = 15
+    }
+    
     private func observeSearchResults() {
         viewModel.viewState.subscribe(observer: self) { [weak self] newValue, oldValue in
             guard let self = self, newValue != oldValue else { return }
@@ -83,12 +98,18 @@ final class SearchViewController: UIViewController {
     private func updateViewState(viewState: SearchViewState) {
         switch viewState {
         case .loading:
-            // WIP: show activity indicator
+            activityIndicator.isHidden = false
+            activityIndicator.startAnimating()
+            errorMessageView.isHidden = true
             tableView.isHidden = true
-        case .error(_):
-            // WIP: Show error message
+        case .error(let errorMessage):
+            activityIndicator.isHidden = true
+            errorMessageView.isHidden = false
             tableView.isHidden = true
+            errorMessageView.text = errorMessage
         case .loaded(_):
+            activityIndicator.isHidden = true
+            errorMessageView.isHidden = true
             tableView.isHidden = false
             tableView.reloadData()
         }
@@ -146,3 +167,5 @@ private extension SearchViewModelProtocol {
         return searchResults
     }
 }
+
+// WIP: Seems like this takes away my table view and all other subviews, check the UISearchController documentation one more time
