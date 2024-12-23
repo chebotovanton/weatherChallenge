@@ -7,6 +7,7 @@
 
 import Foundation
 
+// WIP: Move to a Tools framework?
 // WIP: Can I simplify/update this?
 final class Observable<T> {
     typealias ObserverBlock = (_ newValue: T, _ oldValue: T) -> Void
