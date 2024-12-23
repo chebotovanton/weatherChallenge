@@ -24,8 +24,7 @@ final class SearchViewController: UIViewController {
     private let tableView = UITableView()
     private let searchResultCellIdentifier = "searchResultCellIdentifier"
     
-    // WIP: Get rid of force-unwrapping
-    private var searchController: UISearchController!
+    private var searchController: UISearchController?
     
     init(viewModel: SearchViewModelProtocol) {
         self.viewModel = viewModel
@@ -47,9 +46,9 @@ final class SearchViewController: UIViewController {
     }
     
     private func setupSearchController() {
-        searchController.delegate = self
-        searchController.searchResultsUpdater = self
-        searchController.searchBar.delegate = self
+        searchController?.delegate = self
+        searchController?.searchResultsUpdater = self
+        searchController?.searchBar.delegate = self
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
     }
