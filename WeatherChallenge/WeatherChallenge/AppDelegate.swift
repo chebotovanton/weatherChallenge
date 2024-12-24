@@ -9,24 +9,14 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-
-
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let window = UIWindow(frame: UIScreen.main.bounds)
         
-        let searchViewController = UIViewController()
-        searchViewController.tabBarItem.title = "Search"
-        searchViewController.tabBarItem.image = UIImage(systemName: "magnifyingglass")
-        
-        let favouritesViewController = UIViewController()
-        favouritesViewController.tabBarItem.title = "Favourites"
-        favouritesViewController.tabBarItem.image = UIImage(systemName: "heart")
-        
-        let tabBarController = UITabBarController()
-        tabBarController.viewControllers = [searchViewController, favouritesViewController]
+        let tabBarController = MainTabBarController(
+            searchViewControllerFactory: SearchViewControllerFactory()
+        )
         
         window.rootViewController = tabBarController
         window.makeKeyAndVisible()
