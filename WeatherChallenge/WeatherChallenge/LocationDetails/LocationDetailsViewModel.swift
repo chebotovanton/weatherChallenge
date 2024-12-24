@@ -5,29 +5,22 @@
 //  Created by Anton Chebotov on 23/12/2024.
 //
 
+import Foundation
+
 final class LocationDetailsViewModel: LocationDetailsViewModelProtocol {
-    var viewData: Observable<LocationDetailsViewData> = Observable(
-        LocationDetailsViewData(
-            currentWeatherData: .loading,
-            forecastData: .loading
-        )
-    )
+    var viewData: LocationDetailsViewData
     
     private let location: SearchResult
-    private let weatherLoadingService: WeatherLoadingServiceProtocol
     
     init(
         location: SearchResult,
-        weatherLoadingService: WeatherLoadingServiceProtocol
+        weatherItems: [WeatherItemProtocol]
     ) {
         self.location = location
-        self.weatherLoadingService = weatherLoadingService
+        self.viewData = LocationDetailsViewData(weatherItems: weatherItems)
     }
     
-    func startLoadingWeatherData() {
-        // WIP: Handle this similarly to the other view model
-        Task { [weak self] in
-            self.weatherLoadingService.currentWeather(location: location)
-        }
+    func viewDidAppear() {
+        // TODO: track analytics here or do any additional setup
     }
 }

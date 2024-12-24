@@ -8,9 +8,27 @@
 import UIKit
 
 final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
+    private let weatherLoadingService: WeatherLoadingServiceProtocol
+    
+    init(
+        weatherLoadingService: WeatherLoadingServiceProtocol
+    ) {
+        self.weatherLoadingService = weatherLoadingService
+    }
+    
     func createResultDetailsController(searchResult: SearchResult) -> UIViewController {
-        // WIP: Provide a proper controller here
-        let viewController = UIViewController()
+        
+        let currentWeatherItem = CurrentWeatherTableItem(
+            location: searchResult,
+            weatherLoadingService: weatherLoadingService
+        )
+        let viewModel = LocationDetailsViewModel(
+            location: searchResult,
+            weatherItems: [
+                currentWeatherItem
+            ]
+        )
+        let viewController = LocationDetailsViewController(viewModel: viewModel)
         viewController.title = searchResult.name
         viewController.view.backgroundColor = .white
         

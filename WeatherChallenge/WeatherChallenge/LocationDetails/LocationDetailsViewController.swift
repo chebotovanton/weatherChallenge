@@ -8,44 +8,31 @@
 import UIKit
 
 protocol LocationDetailsViewModelProtocol {
-    var viewData: Observable<LocationDetailsViewData> { get }
+    // TODO: The list of items is static, so no need to have it observable
+    var viewData: LocationDetailsViewData { get }
     
-    func startLoadingWeatherData()
+    func viewDidAppear()
 }
 
-enum WeatherDataContainer<T> {
-    case loading
-    case error(String)
-    case loaded(T)
+protocol WeatherItemProtocol {
+    func registerCell(tableView: UITableView)
+    func preferredCellHeight() -> CGFloat
+    func createCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell
 }
 
-struct CurrentWeatherData: Decodable {
-    let description: String
-}
-
-struct ForecastItem {
-    
-}
-
-struct ForecastData {
-    let days: [ForecastItem]
-}
-
+// TODO: This approach allows us to add more items like current weather/forecast/aurora data/air pollution to the list without changing the controller code
 struct LocationDetailsViewData {
-    let currentWeatherData: WeatherDataContainer<CurrentWeatherData>
-    let forecastData: WeatherDataContainer<ForecastData>
+    let weatherItems: [WeatherItemProtocol]
 }
 
 final class LocationDetailsViewController: UIViewController {
-    
     private let viewModel: LocationDetailsViewModelProtocol
-    
     private let tableView = UITableView()
-    private let currentWeatherCellIdentifier = "currentWeatherCellIdentifier"
-    private let forecastCellIdentifier = "forecastCellIdentifier"
     
     init(viewModel: LocationDetailsViewModelProtocol) {
         self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -56,16 +43,19 @@ final class LocationDetailsViewController: UIViewController {
         super.viewDidLoad()
         
         setupTableView()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
-        viewModel.startLoadingWeatherData()
+        viewModel.viewDidAppear()
     }
     
     private func setupTableView() {
-        // WIP: Introduce different cells
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: currentWeatherCellIdentifier)
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: forecastCellIdentifier)
+        viewModel.viewData.weatherItems.forEach { $0.registerCell(tableView: tableView) }
         
         tableView.dataSource = self
+        tableView.delegate = self
         
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -77,31 +67,40 @@ final class LocationDetailsViewController: UIViewController {
 }
 
 extension LocationDetailsViewController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // WIP: I'm not happy with the explicit indexing
-        if section == 0 {
-            return 1
-        } else {
-            // WIP: Provide a proper value here
-            return 1
-        }
+        return viewModel.viewData.weatherItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: currentWeatherCellIdentifier, for: indexPath)
-            return cell
-        } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: forecastCellIdentifier, for: indexPath)
-            return cell
+        let weatherItems = viewModel.viewData.weatherItems
+        guard indexPath.item < weatherItems.count else {
+            return UITableViewCell()
         }
+        let item = weatherItems[indexPath.item]
+        return item.createCell(tableView: tableView, indexPath: indexPath)
     }
 }
 
-// WIP: Weather now
-// WIP: 5 days forecast
+
+extension LocationDetailsViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let weatherItems = viewModel.viewData.weatherItems
+        guard indexPath.item < weatherItems.count else { return 0 }
+        let item = weatherItems[indexPath.item]
+        
+        return item.preferredCellHeight()
+    }
+    
+// TODO: We can use something like this to postpone the data loading if we have more items than 2
+//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        let weatherItems = viewModel.viewData.weatherItems
+//        guard indexPath.item < weatherItems.count else {
+//            return UITableViewCell()
+//        }
+//        let item = weatherItems[indexPath.item]
+//        item.cellWillAppearOnScreen()
+//    }
+    
+}
+
 // WIP: Disable cell selection

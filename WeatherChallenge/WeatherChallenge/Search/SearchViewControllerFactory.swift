@@ -11,12 +11,14 @@ import UIKit
 final class SearchViewControllerFactory {
     func createViewController() -> UIViewController {
         let searchNavController = UINavigationController()
-        let router = SearchRouter(
-            navigationController: searchNavController,
-            resultDetailsPageFactory: ResultDetailsPageFactory()
-        )
         
         let urlSession = URLSession(configuration: .default)
+        let router = SearchRouter(
+            navigationController: searchNavController,
+            resultDetailsPageFactory: ResultDetailsPageFactory(
+                weatherLoadingService: WeatherLoadingService(urlSession: urlSession)
+            )
+        )
         
         let viewModel = SearchViewModel(
             router: router,
