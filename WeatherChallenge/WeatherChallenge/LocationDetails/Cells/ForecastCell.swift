@@ -23,10 +23,10 @@ protocol ForecastCellViewModelProtocol {
 
 final class ForecastCell: UITableViewCell {
     private var viewModel: ForecastCellViewModelProtocol?
+    private let statusLabel = UILabel()
     
     func configure(viewModel: ForecastCellViewModelProtocol) {
-        self.selectionStyle = .none
-        self.backgroundColor = .green
+        configureAppearance()
         
         self.viewModel = viewModel
         
@@ -43,15 +43,25 @@ final class ForecastCell: UITableViewCell {
         viewModel.startLoadingData()
     }
     
+    private func configureAppearance() {
+        self.selectionStyle = .none
+        self.backgroundColor = .green
+        
+        addSubview(statusLabel)
+        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+        statusLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        statusLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+    }
+    
     private func updateState(newState: WeatherDataContainer<ForecastData>) {
         print(newState)
-//        switch newState {
-//        case .loading:
-//            self.statusLabel.text = "Loading"
-//        case .error(let errorDescription):
-//            self.statusLabel.text = errorDescription
-//        case .loaded(let weatherData):
-//            self.statusLabel.text = weatherData.description
-//        }
+        switch newState {
+        case .loading:
+            self.statusLabel.text = "Loading"
+        case .error(let errorDescription):
+            self.statusLabel.text = errorDescription
+        case .loaded(let weatherData):
+            self.statusLabel.text = "Loaded"
+        }
     }
 }
