@@ -23,7 +23,6 @@ where CurrentWeatherLoader: NetworkServiceProtocol,
         self.weatherLoadingService = weatherLoadingService
     }
     
-    // WIP: Can I make this method async as well?
     func startLoadingData() {
         Task { [weak self] in
             guard let self = self else { return }
