@@ -20,6 +20,6 @@ final class UrlFormatter: UrlFormatterProtocol {
     }
     
     func urlString(location: Location) -> String {
-        return String(format: urlFormat, location.lat, location.lon, apiKeyProvider.apiKey)
+        return String(format: urlFormat, location.lat, location.lon, apiKeyProvider.apiKey) + "&units=metric"
     }
 }

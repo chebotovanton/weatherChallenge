@@ -81,5 +81,4 @@ final class ForecastItemViewCell: UICollectionViewCell {
     }
 }
 
-// WIP: Change units to Celcius
 // WIP: Limit the number of forecast items. How to get daily items, not 3h ones?
