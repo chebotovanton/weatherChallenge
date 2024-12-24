@@ -88,8 +88,7 @@ final class SearchViewController: UIViewController {
         
         self.view.addSubview(activityIndicator)
         activityIndicator.centerInSuperview()
-        activityIndicator.backgroundColor = .black
-        activityIndicator.layer.cornerRadius = 15
+        activityIndicator.color = .black
     }
     
     private func observeSearchResults() {
