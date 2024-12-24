@@ -56,9 +56,7 @@ final class CurrentWeatherCell: UITableViewCell {
         selectionStyle = .none
         
         addSubview(statusLabel)
-        statusLabel.translatesAutoresizingMaskIntoConstraints = false
-        statusLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
-        statusLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        statusLabel.centerInSuperview()
         
         addSubview(weatherView)
         weatherView.pinToSuperviewEdges()

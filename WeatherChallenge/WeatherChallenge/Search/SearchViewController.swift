@@ -84,14 +84,10 @@ final class SearchViewController: UIViewController {
     
     private func setupAccessoryViews() {
         self.view.addSubview(errorMessageView)
-        errorMessageView.translatesAutoresizingMaskIntoConstraints = false
-        errorMessageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-        errorMessageView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
+        errorMessageView.centerInSuperview()
         
         self.view.addSubview(activityIndicator)
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        activityIndicator.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-        activityIndicator.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
+        activityIndicator.centerInSuperview()
         activityIndicator.backgroundColor = .black
         activityIndicator.layer.cornerRadius = 15
     }

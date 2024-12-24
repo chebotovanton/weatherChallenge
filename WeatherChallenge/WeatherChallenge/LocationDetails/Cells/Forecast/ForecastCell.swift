@@ -48,9 +48,7 @@ final class ForecastCell: UITableViewCell {
         self.backgroundColor = .green
         
         addSubview(statusLabel)
-        statusLabel.translatesAutoresizingMaskIntoConstraints = false
-        statusLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
-        statusLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        statusLabel.centerInSuperview()
     }
     
     private func updateState(newState: WeatherDataContainer<ForecastData>) {
