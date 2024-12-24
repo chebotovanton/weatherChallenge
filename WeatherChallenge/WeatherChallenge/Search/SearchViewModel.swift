@@ -30,9 +30,11 @@ final class SearchViewModel: SearchViewModelProtocol {
         self.searchService = searchService
     }
     
-    func searchQueryChanged(text: String) {
+    func searchQueryChanged(text: String?) {
         debounceTimer?.invalidate()
         
+        guard let text = text, text.count > 1 else { return }
+
         debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
             guard let self = self else { return }
             

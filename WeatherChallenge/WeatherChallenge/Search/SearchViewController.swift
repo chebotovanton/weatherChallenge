@@ -21,7 +21,7 @@ enum SearchViewState: Equatable {
 }
 
 protocol SearchViewModelProtocol {
-    func searchQueryChanged(text: String)
+    func searchQueryChanged(text: String?)
     func searchResultSelected(Location: Location)
  
     var viewState: Observable<SearchViewState> { get }
@@ -101,7 +101,6 @@ final class SearchViewController: UIViewController {
     private func updateViewState(viewState: SearchViewState) {
         switch viewState {
         case .loading:
-            // WIP: This isn't working as expected
             activityIndicator.isHidden = false
             activityIndicator.startAnimating()
             errorMessageView.isHidden = true
@@ -121,17 +120,12 @@ final class SearchViewController: UIViewController {
 }
 
 extension SearchViewController: UISearchBarDelegate {
-    // WIP: This is the wrong method to have, silly!
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        if let queryText = searchBar.text, !queryText.isEmpty {
-            viewModel.searchQueryChanged(text: queryText)
-        }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        viewModel.searchQueryChanged(text: searchText)
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if let queryText = searchBar.text, !queryText.isEmpty {
-            viewModel.searchQueryChanged(text: queryText)
-        }
+        viewModel.searchQueryChanged(text: searchBar.text)
     }
 }
 
