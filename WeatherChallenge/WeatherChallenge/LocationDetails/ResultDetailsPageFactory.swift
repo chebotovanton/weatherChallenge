@@ -20,7 +20,6 @@ final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
     }
     
     func createResultDetailsController(Location: Location) -> UIViewController {
-        
         let currentWeatherItem = CurrentWeatherTableItem(
             location: Location,
             currentWeatherCellViewModelFactory: currentWeatherCellViewModelFactory
@@ -30,16 +29,21 @@ final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
             forecastCellViewModelFactory: forecastCellViewModelFactory
         )
         
+        let router = LocationDetailsRouter()
+        
         let viewModel = LocationDetailsViewModel(
             location: Location,
             weatherItems: [
                 currentWeatherItem,
                 forecastItem
-            ]
+            ],
+            router: router
         )
         let viewController = LocationDetailsViewController(viewModel: viewModel)
         viewController.title = Location.name
         viewController.view.backgroundColor = .white
+        
+        router.presentedViewController = viewController
         
         return viewController
     }

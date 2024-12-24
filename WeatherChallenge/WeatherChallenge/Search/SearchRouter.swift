@@ -26,7 +26,7 @@ final class SearchRouter: SearchRouterProtocol {
     
     func navigateToResultDetailsPage(Location: Location) {
         let viewController = resultDetailsPageFactory.createResultDetailsController(Location: Location)
-        navigationController.pushViewController(viewController, animated: true)
+        let navVC = UINavigationController(rootViewController: viewController)
+        navigationController.present(navVC, animated: true)
     }
 }
-// WIP: Change presentation style to modal?
