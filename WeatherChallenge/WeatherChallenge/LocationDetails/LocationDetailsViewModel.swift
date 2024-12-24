@@ -10,10 +10,10 @@ import Foundation
 final class LocationDetailsViewModel: LocationDetailsViewModelProtocol {
     var viewData: LocationDetailsViewData
     
-    private let location: SearchResult
+    private let location: Location
     
     init(
-        location: SearchResult,
+        location: Location,
         weatherItems: [WeatherItemProtocol]
     ) {
         self.location = location

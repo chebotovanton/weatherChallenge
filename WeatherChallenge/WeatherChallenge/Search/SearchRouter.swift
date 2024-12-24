@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ResultDetailsPageFactoryProtocol {
-    func createResultDetailsController(searchResult: SearchResult) -> UIViewController
+    func createResultDetailsController(Location: Location) -> UIViewController
 }
 
 // WIP: Add unit tests
@@ -24,8 +24,8 @@ final class SearchRouter: SearchRouterProtocol {
         self.resultDetailsPageFactory = resultDetailsPageFactory
     }
     
-    func navigateToResultDetailsPage(searchResult: SearchResult) {
-        let viewController = resultDetailsPageFactory.createResultDetailsController(searchResult: searchResult)
+    func navigateToResultDetailsPage(Location: Location) {
+        let viewController = resultDetailsPageFactory.createResultDetailsController(Location: Location)
         navigationController.pushViewController(viewController, animated: true)
     }
 }

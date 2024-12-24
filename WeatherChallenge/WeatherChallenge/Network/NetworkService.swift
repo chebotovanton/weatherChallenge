@@ -28,7 +28,7 @@ enum WeatherLoadingError: Error {
 protocol NetworkServiceProtocol {
     associatedtype ReturnType: Decodable
     
-    func makeRequest(location: SearchResult) async -> Result<ReturnType, WeatherLoadingError>
+    func makeRequest(location: Location) async -> Result<ReturnType, WeatherLoadingError>
 }
 
 final class NetworkService<ReturnType>: NetworkServiceProtocol where ReturnType: Decodable {
@@ -44,7 +44,7 @@ final class NetworkService<ReturnType>: NetworkServiceProtocol where ReturnType:
         self.urlSession = urlSession
     }
     
-    func makeRequest(location: SearchResult) async -> Result<ReturnType, WeatherLoadingError> {
+    func makeRequest(location: Location) async -> Result<ReturnType, WeatherLoadingError> {
         let urlString = urlFormatter.urlString(location: location)
         
         guard let url = URL(string: urlString) else {

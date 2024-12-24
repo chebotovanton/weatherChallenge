@@ -26,7 +26,7 @@ enum LocationSearchError: Error {
 }
 
 protocol LocationSearchServiceProtocol {
-    func search(query: String) async -> Result<[SearchResult], LocationSearchError>
+    func search(query: String) async -> Result<[Location], LocationSearchError>
 }
 
 // TODO: We can generalise NetworkService even further and use it instead of LocationSearchService
@@ -48,7 +48,7 @@ final class LocationSearchService: LocationSearchServiceProtocol {
         self.urlSession = urlSession
     }
     
-    func search(query: String) async -> Result<[SearchResult], LocationSearchError> {
+    func search(query: String) async -> Result<[Location], LocationSearchError> {
         // TODO: May be worthy to introduce a UrlFormatter class later, to have this logic covered with unit tests
         let urlString = String(format: urlFormat, query, resultsLimit, apiKeyProvider.apiKey)
         
@@ -60,7 +60,7 @@ final class LocationSearchService: LocationSearchServiceProtocol {
             return .failure(.emptyResponse)
         }
         
-        guard let searchResults = try? JSONDecoder().decode([SearchResult].self, from: data) else {
+        guard let searchResults = try? JSONDecoder().decode([Location].self, from: data) else {
             return .failure(.wrongResponseFormat)
         }
         

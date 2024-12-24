@@ -7,8 +7,7 @@
 
 import UIKit
 
-// WIP: Rename to Location?
-struct SearchResult: Equatable, Decodable {
+struct Location: Equatable, Decodable {
     let name: String
     let country: String
     let lat: Double
@@ -18,12 +17,12 @@ struct SearchResult: Equatable, Decodable {
 enum SearchViewState: Equatable {
     case loading
     case error(String)
-    case loaded([SearchResult])
+    case loaded([Location])
 }
 
 protocol SearchViewModelProtocol {
     func searchQueryChanged(text: String)
-    func searchResultSelected(searchResult: SearchResult)
+    func searchResultSelected(Location: Location)
  
     var viewState: Observable<SearchViewState> { get }
 }
@@ -149,16 +148,16 @@ extension SearchViewController: UITableViewDataSource {
             return cell
         }
         
-        let searchResult = viewModel.searchResults[indexPath.item]
-        configureCell(cell: cell, searchResult: searchResult)
+        let Location = viewModel.searchResults[indexPath.item]
+        configureCell(cell: cell, Location: Location)
         
         return cell
     }
     
-    private func configureCell(cell: UITableViewCell, searchResult: SearchResult) {
-        cell.textLabel?.text = searchResult.name
+    private func configureCell(cell: UITableViewCell, Location: Location) {
+        cell.textLabel?.text = Location.name
         // WIP: This ain't working. Introduce a custom cell?
-        cell.detailTextLabel?.text = searchResult.country
+        cell.detailTextLabel?.text = Location.country
     }
 }
 
@@ -166,13 +165,13 @@ extension SearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let searchResults = viewModel.searchResults
         guard indexPath.item < searchResults.count else { return }
-        let searchResult = searchResults[indexPath.item]
-        viewModel.searchResultSelected(searchResult: searchResult)
+        let Location = searchResults[indexPath.item]
+        viewModel.searchResultSelected(Location: Location)
     }
 }
 
 private extension SearchViewModelProtocol {
-    var searchResults: [SearchResult] {
+    var searchResults: [Location] {
         guard case .loaded(let searchResults) = viewState.value else { return [] }
         return searchResults
     }

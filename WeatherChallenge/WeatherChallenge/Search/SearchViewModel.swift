@@ -8,7 +8,7 @@
 import Foundation
 
 protocol SearchRouterProtocol {
-    func navigateToResultDetailsPage(searchResult: SearchResult)
+    func navigateToResultDetailsPage(Location: Location)
 }
 
 // WIP: Unit tests
@@ -57,7 +57,7 @@ final class SearchViewModel: SearchViewModelProtocol {
         }
     }
     
-    func searchResultSelected(searchResult: SearchResult) {
-        router.navigateToResultDetailsPage(searchResult: searchResult)
+    func searchResultSelected(Location: Location) {
+        router.navigateToResultDetailsPage(Location: Location)
     }
 }
