@@ -29,26 +29,28 @@ protocol LocationSearchServiceProtocol {
     func search(query: String) async -> Result<[SearchResult], LocationSearchError>
 }
 
+// TODO: We can generalise NetworkService even further and use it instead of LocationSearchService
 final class LocationSearchService: LocationSearchServiceProtocol {
-    // TODO: Would be nice not to keep the keys openly
-    private let apiKey = "3e5afd29dd22c6c30c3f02832b405045"
     private let urlFormat = "http://api.openweathermap.org/geo/1.0/direct?q=%@&limit=%i&appid=%@"
     
+    private let apiKeyProvider: ApiKeyProviderProtocol
     // TODO: Would be nice to hide the urlSession behind a custom protocol for testability
     private let urlSession: URLSession
     private let resultsLimit: Int
     
     init(
+        apiKeyProvider: ApiKeyProviderProtocol,
         resultsLimit: Int,
         urlSession: URLSession
     ) {
+        self.apiKeyProvider = apiKeyProvider
         self.resultsLimit = resultsLimit
         self.urlSession = urlSession
     }
     
     func search(query: String) async -> Result<[SearchResult], LocationSearchError> {
         // TODO: May be worthy to introduce a UrlFormatter class later, to have this logic covered with unit tests
-        let urlString = String(format: urlFormat, query, resultsLimit, apiKey)
+        let urlString = String(format: urlFormat, query, resultsLimit, apiKeyProvider.apiKey)
         
         guard let url = URL(string: urlString) else {
             return .failure(.incorrectUrl)

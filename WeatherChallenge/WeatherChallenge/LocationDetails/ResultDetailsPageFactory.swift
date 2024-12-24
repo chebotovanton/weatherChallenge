@@ -8,26 +8,26 @@
 import UIKit
 
 final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
-    private let weatherLoadingService: WeatherLoadingServiceProtocol
-    private let forecastLoadingService: ForecastLoadingServiceProtocol
+    private let currentWeatherCellViewModelFactory: CurrentWeatherCellViewModelFactoryProtocol
+    private let forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol
     
     init(
-        weatherLoadingService: WeatherLoadingServiceProtocol,
-        forecastLoadingService: ForecastLoadingServiceProtocol
+        currentWeatherCellViewModelFactory: CurrentWeatherCellViewModelFactoryProtocol,
+        forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol
     ) {
-        self.weatherLoadingService = weatherLoadingService
-        self.forecastLoadingService = forecastLoadingService
+        self.currentWeatherCellViewModelFactory = currentWeatherCellViewModelFactory
+        self.forecastCellViewModelFactory = forecastCellViewModelFactory
     }
     
     func createResultDetailsController(searchResult: SearchResult) -> UIViewController {
         
         let currentWeatherItem = CurrentWeatherTableItem(
             location: searchResult,
-            weatherLoadingService: weatherLoadingService
+            currentWeatherCellViewModelFactory: currentWeatherCellViewModelFactory
         )
         let forecastItem = ForecastTableItem(
             location: searchResult,
-            forecastLoadingService: forecastLoadingService
+            forecastCellViewModelFactory: forecastCellViewModelFactory
         )
         
         let viewModel = LocationDetailsViewModel(
