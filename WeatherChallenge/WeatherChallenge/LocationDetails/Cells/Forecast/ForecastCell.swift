@@ -66,7 +66,6 @@ final class ForecastCell: UITableViewCell {
     }
     
     private func updateState(newState: WeatherDataContainer<ForecastData>) {
-        print(newState)
         switch newState {
         case .loading:
             self.statusLabel.isHidden = false

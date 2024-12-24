@@ -8,21 +8,20 @@
 import Foundation
 
 final class ForecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol {
-    private let apiKeyProvider: ApiKeyProvider
+    private let urlFormatter: UrlFormatterProtocol
     private let urlSession: URLSession
     
     init(
-        apiKeyProvider: ApiKeyProvider,
+        urlFormatter: UrlFormatterProtocol,
         urlSession: URLSession
     ) {
-        self.apiKeyProvider = apiKeyProvider
+        self.urlFormatter = urlFormatter
         self.urlSession = urlSession
     }
     
-    func createForecastCellViewModelFactory(location: SearchResult) -> ForecastCellViewModel<ForecastLoadingService<ForecastData>> {
-        let forecastLoadingService = ForecastLoadingService<ForecastData>(
-            apiKeyProvider: apiKeyProvider,
-            urlFormat: "https://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f&appid=%@",
+    func createForecastCellViewModelFactory(location: SearchResult) -> ForecastCellViewModel<NetworkService<ForecastData>> {
+        let forecastLoadingService = NetworkService<ForecastData>(
+            urlFormatter: urlFormatter,
             urlSession: urlSession
         )
         

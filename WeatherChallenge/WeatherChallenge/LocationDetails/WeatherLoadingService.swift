@@ -64,31 +64,27 @@ final class WeatherLoadingService: WeatherLoadingServiceProtocol {
     }
 }
 
-protocol ApiKeyProviderProtocol {
-    var apiKey: String { get }
+protocol NetworkServiceProtocol {
+    associatedtype ReturnType: Decodable
+    
+    func makeRequest(location: SearchResult) async -> Result<ReturnType, WeatherLoadingError>
 }
 
-final class ForecastLoadingService<ReturnType>: NetworkServiceProtocol where ReturnType: Decodable {
-    
-    private let apiKeyProvider: ApiKeyProviderProtocol
-    // WIP: Replace urlFormat with formatter
-    private let urlFormat: String
+final class NetworkService<ReturnType>: NetworkServiceProtocol where ReturnType: Decodable {
     // TODO: Would be nice to hide the urlSession behind a custom protocol for testability
     private let urlSession: URLSession
+    private let urlFormatter: UrlFormatterProtocol
     
     init(
-        apiKeyProvider: ApiKeyProviderProtocol,
-        urlFormat: String,
+        urlFormatter: UrlFormatterProtocol,
         urlSession: URLSession
     ) {
-        self.apiKeyProvider = apiKeyProvider
-        self.urlFormat = urlFormat
+        self.urlFormatter = urlFormatter
         self.urlSession = urlSession
     }
     
     func makeRequest(location: SearchResult) async -> Result<ReturnType, WeatherLoadingError> {
-        // TODO: May be worthy to introduce a UrlFormatter class later, to have this logic covered with unit tests
-        let urlString = String(format: urlFormat, location.lat, location.lon, apiKeyProvider.apiKey)
+        let urlString = urlFormatter.urlString(location: location)
         
         guard let url = URL(string: urlString) else {
             return .failure(.incorrectUrl)

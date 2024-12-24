@@ -14,9 +14,13 @@ final class SearchViewControllerFactory {
         
         let urlSession = URLSession(configuration: .default)
         let apiKeyProvider = ApiKeyProvider()
+        let forecastUrlFormatter = UrlFormatter(
+            urlFormat: "https://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f&appid=%@",
+            apiKeyProvider: apiKeyProvider
+        )
                 
         let forecastCellViewModelFactory = ForecastCellViewModelFactory(
-            apiKeyProvider: apiKeyProvider,
+            urlFormatter: forecastUrlFormatter,
             urlSession: urlSession
         )
         
@@ -45,7 +49,3 @@ final class SearchViewControllerFactory {
 }
 
 // TODO: This class can stay on the app level, while all the viewModel, viewController and router classes should be moved to a separate module
-
-final class ApiKeyProvider: ApiKeyProviderProtocol {
-    var apiKey: String = "3e5afd29dd22c6c30c3f02832b405045"
-}

@@ -7,12 +7,6 @@
 
 import Foundation
 
-protocol NetworkServiceProtocol {
-    associatedtype ReturnType: Decodable
-    
-    func makeRequest(location: SearchResult) async -> Result<ReturnType, WeatherLoadingError>
-}
-
 final class ForecastCellViewModel<ForecastLoader>: ForecastCellViewModelProtocol
 where ForecastLoader: NetworkServiceProtocol,
       ForecastLoader.ReturnType == ForecastData
