@@ -64,4 +64,39 @@ final class WeatherLoadingService: WeatherLoadingServiceProtocol {
     }
 }
 
+final class ForecastLoadingService: ForecastLoadingServiceProtocol {
+    // TODO: Would be nice not to keep the keys openly
+    private let apiKey = "3e5afd29dd22c6c30c3f02832b405045"
+    // WIP: That's wrong url
+    private let urlFormat = "https://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&appid=%@"
+    
+    // TODO: Would be nice to hide the urlSession behind a custom protocol for testability
+    private let urlSession: URLSession
+    
+    init(
+        urlSession: URLSession
+    ) {
+        self.urlSession = urlSession
+    }
+    
+    func weatherForecast(location: SearchResult) async -> Result<ForecastData, WeatherLoadingError> {
+        // TODO: May be worthy to introduce a UrlFormatter class later, to have this logic covered with unit tests
+        let urlString = String(format: urlFormat, location.lat, location.lon, apiKey)
+        
+        guard let url = URL(string: urlString) else {
+            return .failure(.incorrectUrl)
+        }
+        
+        guard let (data, _) = try? await urlSession.data(from: url) else {
+            return .failure(.emptyResponse)
+        }
+        
+        guard let forecastData = try? JSONDecoder().decode(ForecastData.self, from: data) else {
+            return .failure(.wrongResponseFormat)
+        }
+        
+        return .success(forecastData)
+    }
+}
+
 // WIP: Unify services using generics

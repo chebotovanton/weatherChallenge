@@ -10,7 +10,7 @@ import UIKit
 final class CurrentWeatherTableItem: WeatherItemProtocol {
     private let currentWeatherCellIdentifier = "currentWeatherCellIdentifier"
     
-    // WIP: Should this be hidden in another factory?
+    // TODO: This can be hidden in another factory for modularisation purpose
     private let location: SearchResult
     private let weatherLoadingService: WeatherLoadingServiceProtocol
     

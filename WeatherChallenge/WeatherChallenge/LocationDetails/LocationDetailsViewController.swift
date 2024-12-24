@@ -102,5 +102,3 @@ extension LocationDetailsViewController: UITableViewDelegate {
 //    }
     
 }
-
-// WIP: Disable cell selection

@@ -22,6 +22,9 @@ final class CurrentWeatherCell: UITableViewCell {
     private let statusLabel = UILabel()
     
     func configure(viewModel: CurrentWeatherCellViewModelProtocol) {
+        self.selectionStyle = .none
+        self.backgroundColor = .yellow
+        
         self.viewModel = viewModel
         
         self.viewModel?.viewData.subscribe(

@@ -16,7 +16,8 @@ final class SearchViewControllerFactory {
         let router = SearchRouter(
             navigationController: searchNavController,
             resultDetailsPageFactory: ResultDetailsPageFactory(
-                weatherLoadingService: WeatherLoadingService(urlSession: urlSession)
+                weatherLoadingService: WeatherLoadingService(urlSession: urlSession),
+                forecastLoadingService: ForecastLoadingService(urlSession: urlSession)
             )
         )
         
