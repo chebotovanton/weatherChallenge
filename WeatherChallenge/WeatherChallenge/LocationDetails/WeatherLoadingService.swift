@@ -68,7 +68,7 @@ final class ForecastLoadingService: ForecastLoadingServiceProtocol {
     // TODO: Would be nice not to keep the keys openly
     private let apiKey = "3e5afd29dd22c6c30c3f02832b405045"
     // WIP: That's wrong url
-    private let urlFormat = "https://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&appid=%@"
+    private let urlFormat = "https://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f&appid=%@"
     
     // TODO: Would be nice to hide the urlSession behind a custom protocol for testability
     private let urlSession: URLSession

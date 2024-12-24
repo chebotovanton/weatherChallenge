@@ -7,6 +7,7 @@
 
 import UIKit
 
+// WIP: Rename to Location?
 struct SearchResult: Equatable, Decodable {
     let name: String
     let country: String
