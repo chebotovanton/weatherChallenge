@@ -70,7 +70,7 @@ final class SearchViewController: UIViewController {
     }
     
     private func setupTableView() {
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: searchResultCellIdentifier)
+        tableView.register(SubtitleCell.self, forCellReuseIdentifier: searchResultCellIdentifier)
         tableView.dataSource = self
         tableView.delegate = self
         
@@ -141,16 +141,15 @@ extension SearchViewController: UITableViewDataSource {
             return cell
         }
         
-        let Location = viewModel.searchResults[indexPath.item]
-        configureCell(cell: cell, Location: Location)
+        let location = viewModel.searchResults[indexPath.item]
+        configureCell(cell: cell, location: location)
         
         return cell
     }
     
-    private func configureCell(cell: UITableViewCell, Location: Location) {
-        cell.textLabel?.text = Location.name
-        // WIP: This ain't working. Introduce a custom cell?
-        cell.detailTextLabel?.text = Location.country
+    private func configureCell(cell: UITableViewCell, location: Location) {
+        cell.textLabel?.text = location.name
+        cell.detailTextLabel?.text = location.country
     }
 }
 
@@ -171,3 +170,14 @@ private extension SearchViewModelProtocol {
 }
 
 // WIP: Pre-fill the table view with the favourites? Instead of tabbar?
+
+// TODO: This feels unneccessarily naughty, but it works!
+private class SubtitleCell: UITableViewCell {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
