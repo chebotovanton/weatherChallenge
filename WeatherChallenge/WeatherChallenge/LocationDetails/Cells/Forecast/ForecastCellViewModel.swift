@@ -7,19 +7,24 @@
 
 import Foundation
 
-protocol ForecastLoadingServiceProtocol {
-    func weatherForecast(location: SearchResult) async -> Result<ForecastData, WeatherLoadingError>
+protocol NetworkServiceProtocol {
+    associatedtype ReturnType: Decodable
+    
+    func makeRequest(location: SearchResult) async -> Result<ReturnType, WeatherLoadingError>
 }
 
-final class ForecastCellViewModel: ForecastCellViewModelProtocol {
+final class ForecastCellViewModel<ForecastLoader>: ForecastCellViewModelProtocol
+where ForecastLoader: NetworkServiceProtocol,
+      ForecastLoader.ReturnType == ForecastData
+{
     var viewData: Observable<WeatherDataContainer<ForecastData>> = Observable(.loading)
     
     private let location: SearchResult
-    private let forecastLoadingService: ForecastLoadingServiceProtocol
+    private let forecastLoadingService: ForecastLoader
     
     init(
         location: SearchResult,
-        forecastLoadingService: ForecastLoadingServiceProtocol
+        forecastLoadingService: ForecastLoader
     ) {
         self.location = location
         self.forecastLoadingService = forecastLoadingService
@@ -28,7 +33,7 @@ final class ForecastCellViewModel: ForecastCellViewModelProtocol {
     func startLoadingData() {
         Task { [weak self] in
             guard let self = self else { return }
-            let currentWeatherResult = await self.forecastLoadingService.weatherForecast(location: location)
+            let currentWeatherResult = await self.forecastLoadingService.makeRequest(location: location)
             
             let currentWeatherState: WeatherDataContainer = {
                 switch currentWeatherResult {

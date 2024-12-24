@@ -13,11 +13,18 @@ final class SearchViewControllerFactory {
         let searchNavController = UINavigationController()
         
         let urlSession = URLSession(configuration: .default)
+        let apiKeyProvider = ApiKeyProvider()
+                
+        let forecastCellViewModelFactory = ForecastCellViewModelFactory(
+            apiKeyProvider: apiKeyProvider,
+            urlSession: urlSession
+        )
+        
         let router = SearchRouter(
             navigationController: searchNavController,
             resultDetailsPageFactory: ResultDetailsPageFactory(
                 weatherLoadingService: WeatherLoadingService(urlSession: urlSession),
-                forecastLoadingService: ForecastLoadingService(urlSession: urlSession)
+                forecastCellViewModelFactory: forecastCellViewModelFactory
             )
         )
         
@@ -38,3 +45,7 @@ final class SearchViewControllerFactory {
 }
 
 // TODO: This class can stay on the app level, while all the viewModel, viewController and router classes should be moved to a separate module
+
+final class ApiKeyProvider: ApiKeyProviderProtocol {
+    var apiKey: String = "3e5afd29dd22c6c30c3f02832b405045"
+}

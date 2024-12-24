@@ -7,19 +7,22 @@
 
 import UIKit
 
+protocol ForecastCellViewModelFactoryProtocol {
+    // WIP: Do I have to expose the type?
+    func createForecastCellViewModelFactory(location: SearchResult) -> ForecastCellViewModel<ForecastLoadingService<ForecastData>>
+}
+
 final class ForecastTableItem: WeatherItemProtocol {
     private let forecastCellIdentifier = "forecastCellIdentifier"
-    
-    // TODO: This can be hidden in another factory for modularisation purpose
     private let location: SearchResult
-    private let forecastLoadingService: ForecastLoadingServiceProtocol
+    private let forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol
     
     init(
         location: SearchResult,
-        forecastLoadingService: ForecastLoadingServiceProtocol
+        forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol
     ) {
         self.location = location
-        self.forecastLoadingService = forecastLoadingService
+        self.forecastCellViewModelFactory = forecastCellViewModelFactory
     }
     
     func registerCell(tableView: UITableView) {
@@ -32,12 +35,8 @@ final class ForecastTableItem: WeatherItemProtocol {
         let cell = tableView.dequeueReusableCell(withIdentifier: forecastCellIdentifier, for: indexPath)
         guard let currentWeatherCell = cell as? ForecastCell else { return cell }
         
-        let viewModel = ForecastCellViewModel(
-            location: location,
-            forecastLoadingService: forecastLoadingService
-        )
-        
         // WIP: Do I wanna keep the view model reference and reuse it on cell reuse?
+        let viewModel = forecastCellViewModelFactory.createForecastCellViewModelFactory(location: location)
         currentWeatherCell.configure(viewModel: viewModel)
         
         return currentWeatherCell

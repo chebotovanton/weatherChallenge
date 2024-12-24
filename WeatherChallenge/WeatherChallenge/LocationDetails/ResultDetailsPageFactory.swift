@@ -9,14 +9,14 @@ import UIKit
 
 final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
     private let weatherLoadingService: WeatherLoadingServiceProtocol
-    private let forecastLoadingService: ForecastLoadingServiceProtocol
+    private let forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol
     
     init(
         weatherLoadingService: WeatherLoadingServiceProtocol,
-        forecastLoadingService: ForecastLoadingServiceProtocol
+        forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol
     ) {
         self.weatherLoadingService = weatherLoadingService
-        self.forecastLoadingService = forecastLoadingService
+        self.forecastCellViewModelFactory = forecastCellViewModelFactory
     }
     
     func createResultDetailsController(searchResult: SearchResult) -> UIViewController {
@@ -27,7 +27,7 @@ final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
         )
         let forecastItem = ForecastTableItem(
             location: searchResult,
-            forecastLoadingService: forecastLoadingService
+            forecastCellViewModelFactory: forecastCellViewModelFactory
         )
         
         let viewModel = LocationDetailsViewModel(

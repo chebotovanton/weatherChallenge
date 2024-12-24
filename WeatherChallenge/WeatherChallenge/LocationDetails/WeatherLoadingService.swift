@@ -64,24 +64,31 @@ final class WeatherLoadingService: WeatherLoadingServiceProtocol {
     }
 }
 
-final class ForecastLoadingService: ForecastLoadingServiceProtocol {
-    // TODO: Would be nice not to keep the keys openly
-    private let apiKey = "3e5afd29dd22c6c30c3f02832b405045"
-    // WIP: That's wrong url
-    private let urlFormat = "https://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f&appid=%@"
+protocol ApiKeyProviderProtocol {
+    var apiKey: String { get }
+}
+
+final class ForecastLoadingService<ReturnType>: NetworkServiceProtocol where ReturnType: Decodable {
     
+    private let apiKeyProvider: ApiKeyProviderProtocol
+    // WIP: Replace urlFormat with formatter
+    private let urlFormat: String
     // TODO: Would be nice to hide the urlSession behind a custom protocol for testability
     private let urlSession: URLSession
     
     init(
+        apiKeyProvider: ApiKeyProviderProtocol,
+        urlFormat: String,
         urlSession: URLSession
     ) {
+        self.apiKeyProvider = apiKeyProvider
+        self.urlFormat = urlFormat
         self.urlSession = urlSession
     }
     
-    func weatherForecast(location: SearchResult) async -> Result<ForecastData, WeatherLoadingError> {
+    func makeRequest(location: SearchResult) async -> Result<ReturnType, WeatherLoadingError> {
         // TODO: May be worthy to introduce a UrlFormatter class later, to have this logic covered with unit tests
-        let urlString = String(format: urlFormat, location.lat, location.lon, apiKey)
+        let urlString = String(format: urlFormat, location.lat, location.lon, apiKeyProvider.apiKey)
         
         guard let url = URL(string: urlString) else {
             return .failure(.incorrectUrl)
@@ -91,12 +98,10 @@ final class ForecastLoadingService: ForecastLoadingServiceProtocol {
             return .failure(.emptyResponse)
         }
         
-        guard let forecastData = try? JSONDecoder().decode(ForecastData.self, from: data) else {
+        guard let forecastData = try? JSONDecoder().decode(ReturnType.self, from: data) else {
             return .failure(.wrongResponseFormat)
         }
         
         return .success(forecastData)
     }
 }
-
-// WIP: Unify services using generics
