@@ -7,7 +7,6 @@
 
 import UIKit
 
-// WIP: Add a protocol?
 final class SearchViewControllerFactory {
     func createViewController() -> UIViewController {
         let searchNavController = UINavigationController()
@@ -24,10 +23,19 @@ final class SearchViewControllerFactory {
             urlSession: urlSession
         )
         
+        let currentWeatherUrlFormatter = UrlFormatter(
+            urlFormat: "https://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&appid=%@",
+            apiKeyProvider: apiKeyProvider
+        )
+        let currentWeatherCellViewModelFactory = CurrentWeatherCellViewModelFactory(
+            urlFormatter: currentWeatherUrlFormatter,
+            urlSession: urlSession
+        )
+        
         let router = SearchRouter(
             navigationController: searchNavController,
             resultDetailsPageFactory: ResultDetailsPageFactory(
-                weatherLoadingService: WeatherLoadingService(urlSession: urlSession),
+                currentWeatherCellViewModelFactory: currentWeatherCellViewModelFactory,
                 forecastCellViewModelFactory: forecastCellViewModelFactory
             )
         )
@@ -35,6 +43,7 @@ final class SearchViewControllerFactory {
         let viewModel = SearchViewModel(
             router: router,
             searchService: LocationSearchService(
+                apiKeyProvider: apiKeyProvider,
                 resultsLimit: 10,
                 urlSession: urlSession
             )

@@ -8,14 +8,14 @@
 import UIKit
 
 final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
-    private let weatherLoadingService: WeatherLoadingServiceProtocol
+    private let currentWeatherCellViewModelFactory: CurrentWeatherCellViewModelFactoryProtocol
     private let forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol
     
     init(
-        weatherLoadingService: WeatherLoadingServiceProtocol,
+        currentWeatherCellViewModelFactory: CurrentWeatherCellViewModelFactoryProtocol,
         forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol
     ) {
-        self.weatherLoadingService = weatherLoadingService
+        self.currentWeatherCellViewModelFactory = currentWeatherCellViewModelFactory
         self.forecastCellViewModelFactory = forecastCellViewModelFactory
     }
     
@@ -23,7 +23,7 @@ final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
         
         let currentWeatherItem = CurrentWeatherTableItem(
             location: searchResult,
-            weatherLoadingService: weatherLoadingService
+            currentWeatherCellViewModelFactory: currentWeatherCellViewModelFactory
         )
         let forecastItem = ForecastTableItem(
             location: searchResult,

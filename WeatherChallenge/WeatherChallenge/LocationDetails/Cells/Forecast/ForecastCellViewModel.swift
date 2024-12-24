@@ -9,8 +9,7 @@ import Foundation
 
 final class ForecastCellViewModel<ForecastLoader>: ForecastCellViewModelProtocol
 where ForecastLoader: NetworkServiceProtocol,
-      ForecastLoader.ReturnType == ForecastData
-{
+      ForecastLoader.ReturnType == ForecastData {
     var viewData: Observable<WeatherDataContainer<ForecastData>> = Observable(.loading)
     
     private let location: SearchResult

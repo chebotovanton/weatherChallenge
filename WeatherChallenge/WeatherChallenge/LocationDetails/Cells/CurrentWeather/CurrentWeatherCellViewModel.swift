@@ -7,19 +7,17 @@
 
 import Foundation
 
-protocol CurrentWeatherServiceProtocol {
-    func currentWeather(location: SearchResult) async -> Result<CurrentWeatherData, WeatherLoadingError>
-}
-
-final class CurrentWeatherCellViewModel: CurrentWeatherCellViewModelProtocol {    
+final class CurrentWeatherCellViewModel<CurrentWeatherLoader>: CurrentWeatherCellViewModelProtocol
+where CurrentWeatherLoader: NetworkServiceProtocol,
+      CurrentWeatherLoader.ReturnType == CurrentWeatherData {
     var viewData: Observable<WeatherDataContainer<CurrentWeatherData>> = Observable(.loading)
     
     private let location: SearchResult
-    private let weatherLoadingService: WeatherLoadingServiceProtocol
+    private let weatherLoadingService: CurrentWeatherLoader
     
     init(
         location: SearchResult,
-        weatherLoadingService: WeatherLoadingServiceProtocol
+        weatherLoadingService: CurrentWeatherLoader
     ) {
         self.location = location
         self.weatherLoadingService = weatherLoadingService
@@ -29,7 +27,7 @@ final class CurrentWeatherCellViewModel: CurrentWeatherCellViewModelProtocol {
     func startLoadingData() {
         Task { [weak self] in
             guard let self = self else { return }
-            let currentWeatherResult = await self.weatherLoadingService.currentWeather(location: location)
+            let currentWeatherResult = await self.weatherLoadingService.makeRequest(location: location)
             
             let currentWeatherState: WeatherDataContainer = {
                 switch currentWeatherResult {
