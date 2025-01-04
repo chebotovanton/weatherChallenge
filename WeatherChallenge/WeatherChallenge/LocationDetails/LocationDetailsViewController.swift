@@ -8,11 +8,13 @@
 import UIKit
 
 protocol LocationDetailsViewModelProtocol {
-    // TODO: The list of items is static, so no need to have it observable
+    // WIP: Is this the most refined approach?
+    var favoriteButtonTitle: Observable<String> { get }
     var viewData: LocationDetailsViewData { get }
     
     func viewDidAppear()
     func close()
+    func favoriteButtonClicked()
 }
 
 protocol WeatherItemProtocol {
@@ -70,10 +72,25 @@ final class LocationDetailsViewController: UIViewController {
     private func setupNavBarItems() {
         let leftItem = UIBarButtonItem(title: "Close", image: nil, target: self, action: #selector(close))
         self.navigationItem.setLeftBarButton(leftItem, animated: false)
+        
+        setupFavoriteButton()
+        
+        viewModel.favoriteButtonTitle.subscribe(observer: self) { [weak self] _, _ in
+            self?.setupFavoriteButton()
+        }
+    }
+    
+    private func setupFavoriteButton() {
+        let rightItem = UIBarButtonItem(title: viewModel.favoriteButtonTitle.value, image: nil, target: self, action: #selector(favoriteButtonClicked))
+        self.navigationItem.setRightBarButton(rightItem, animated: false)
     }
     
     @objc private func close() {
         viewModel.close()
+    }
+    
+    @objc private func favoriteButtonClicked() {
+        viewModel.favoriteButtonClicked()
     }
 }
 

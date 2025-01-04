@@ -32,11 +32,16 @@ final class SearchViewControllerFactory {
             urlSession: urlSession
         )
         
+        let favoritesService = FavoritesService(
+            userDefaults: UserDefaults.standard
+        )
+        
         let router = SearchRouter(
             navigationController: searchNavController,
             resultDetailsPageFactory: ResultDetailsPageFactory(
                 currentWeatherCellViewModelFactory: currentWeatherCellViewModelFactory,
-                forecastCellViewModelFactory: forecastCellViewModelFactory
+                forecastCellViewModelFactory: forecastCellViewModelFactory,
+                favoritesService: favoritesService
             )
         )
         
@@ -46,12 +51,11 @@ final class SearchViewControllerFactory {
                 apiKeyProvider: apiKeyProvider,
                 resultsLimit: 10,
                 urlSession: urlSession
-            )
+            ),
+            favoritesService: favoritesService
         )
         let searchViewController = SearchViewController(viewModel: viewModel)
         searchNavController.viewControllers = [searchViewController]
-        searchViewController.tabBarItem.title = "Search"
-        searchViewController.tabBarItem.image = UIImage(systemName: "magnifyingglass")
         
         return searchNavController
     }

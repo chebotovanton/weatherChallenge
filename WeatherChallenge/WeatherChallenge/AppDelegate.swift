@@ -14,11 +14,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let window = UIWindow(frame: UIScreen.main.bounds)
         
-        let tabBarController = MainTabBarController(
-            searchViewControllerFactory: SearchViewControllerFactory()
-        )
+        let searchViewControllerFactory = SearchViewControllerFactory()
+        let searchViewController = searchViewControllerFactory.createViewController()
         
-        window.rootViewController = tabBarController
+        window.rootViewController = searchViewController
+        window.backgroundColor = .white
         window.makeKeyAndVisible()
         
         self.window = window
