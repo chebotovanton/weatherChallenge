@@ -65,7 +65,10 @@ final class SearchViewModel: SearchViewModelProtocol {
     func searchQueryChanged(text: String?) {
         debounceTimer?.invalidate()
         
-        guard let text = text, text.count > 1 else { return }
+        guard let text = text, text.count > 1 else {
+            loadFavorites()
+            return
+        }
 
         debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
             guard let self = self else { return }
