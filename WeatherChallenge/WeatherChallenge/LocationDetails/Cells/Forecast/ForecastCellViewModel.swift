@@ -12,11 +12,11 @@ where ForecastLoader: NetworkServiceProtocol,
       ForecastLoader.ReturnType == ForecastData {
     var viewData: Observable<WeatherDataContainer<ForecastData>> = Observable(.loading)
     
-    private let location: SearchResult
+    private let location: Location
     private let forecastLoadingService: ForecastLoader
     
     init(
-        location: SearchResult,
+        location: Location,
         forecastLoadingService: ForecastLoader
     ) {
         self.location = location

@@ -12,6 +12,7 @@ protocol LocationDetailsViewModelProtocol {
     var viewData: LocationDetailsViewData { get }
     
     func viewDidAppear()
+    func close()
 }
 
 protocol WeatherItemProtocol {
@@ -43,6 +44,7 @@ final class LocationDetailsViewController: UIViewController {
         super.viewDidLoad()
         
         setupTableView()
+        setupNavBarItems()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -63,6 +65,15 @@ final class LocationDetailsViewController: UIViewController {
         tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+    }
+    
+    private func setupNavBarItems() {
+        let leftItem = UIBarButtonItem(title: "Close", image: nil, target: self, action: #selector(close))
+        self.navigationItem.setLeftBarButton(leftItem, animated: false)
+    }
+    
+    @objc private func close() {
+        viewModel.close()
     }
 }
 

@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ResultDetailsPageFactoryProtocol {
-    func createResultDetailsController(searchResult: SearchResult) -> UIViewController
+    func createResultDetailsController(Location: Location) -> UIViewController
 }
 
 // WIP: Add unit tests
@@ -24,9 +24,9 @@ final class SearchRouter: SearchRouterProtocol {
         self.resultDetailsPageFactory = resultDetailsPageFactory
     }
     
-    func navigateToResultDetailsPage(searchResult: SearchResult) {
-        let viewController = resultDetailsPageFactory.createResultDetailsController(searchResult: searchResult)
-        navigationController.pushViewController(viewController, animated: true)
+    func navigateToResultDetailsPage(Location: Location) {
+        let viewController = resultDetailsPageFactory.createResultDetailsController(Location: Location)
+        let navVC = UINavigationController(rootViewController: viewController)
+        navigationController.present(navVC, animated: true)
     }
 }
-// WIP: Change presentation style to modal?

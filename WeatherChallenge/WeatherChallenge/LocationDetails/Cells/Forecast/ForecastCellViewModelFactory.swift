@@ -19,7 +19,7 @@ final class ForecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol {
         self.urlSession = urlSession
     }
     
-    func createForecastCellViewModelFactory(location: SearchResult) -> ForecastCellViewModel<NetworkService<ForecastData>> {
+    func createForecastCellViewModelFactory(location: Location) -> ForecastCellViewModel<NetworkService<ForecastData>> {
         let forecastLoadingService = NetworkService<ForecastData>(
             urlFormatter: urlFormatter,
             urlSession: urlSession

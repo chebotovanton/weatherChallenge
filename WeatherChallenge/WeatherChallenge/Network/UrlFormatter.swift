@@ -6,7 +6,7 @@
 //
 
 protocol UrlFormatterProtocol {
-    func urlString(location: SearchResult) -> String
+    func urlString(location: Location) -> String
 }
 
 // WIP: How to support all the url formats? The one for the search request?
@@ -19,7 +19,7 @@ final class UrlFormatter: UrlFormatterProtocol {
         self.apiKeyProvider = apiKeyProvider
     }
     
-    func urlString(location: SearchResult) -> String {
-        return String(format: urlFormat, location.lat, location.lon, apiKeyProvider.apiKey)
+    func urlString(location: Location) -> String {
+        return String(format: urlFormat, location.lat, location.lon, apiKeyProvider.apiKey) + "&units=metric"
     }
 }

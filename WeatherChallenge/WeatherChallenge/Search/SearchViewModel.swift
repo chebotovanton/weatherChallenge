@@ -8,7 +8,7 @@
 import Foundation
 
 protocol SearchRouterProtocol {
-    func navigateToResultDetailsPage(searchResult: SearchResult)
+    func navigateToResultDetailsPage(Location: Location)
 }
 
 // WIP: Unit tests
@@ -30,9 +30,11 @@ final class SearchViewModel: SearchViewModelProtocol {
         self.searchService = searchService
     }
     
-    func searchQueryChanged(text: String) {
+    func searchQueryChanged(text: String?) {
         debounceTimer?.invalidate()
         
+        guard let text = text, text.count > 1 else { return }
+
         debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
             guard let self = self else { return }
             
@@ -57,7 +59,7 @@ final class SearchViewModel: SearchViewModelProtocol {
         }
     }
     
-    func searchResultSelected(searchResult: SearchResult) {
-        router.navigateToResultDetailsPage(searchResult: searchResult)
+    func searchResultSelected(Location: Location) {
+        router.navigateToResultDetailsPage(Location: Location)
     }
 }
