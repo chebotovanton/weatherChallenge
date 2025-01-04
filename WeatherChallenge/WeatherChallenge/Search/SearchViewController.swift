@@ -51,12 +51,14 @@ final class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = "Weather"
+        
         setupSearchController()
         setupTableView()
         setupAccessoryViews()
         observeSearchResults()
         
-        self.updateViewState(viewState: viewModel.viewState.value)
+        updateViewState(viewState: viewModel.viewState.value)
     }
     
     private func setupSearchController() {
@@ -159,6 +161,7 @@ extension SearchViewController: UITableViewDelegate {
         guard indexPath.item < searchResults.count else { return }
         let Location = searchResults[indexPath.item]
         viewModel.searchResultSelected(Location: Location)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
@@ -168,8 +171,6 @@ private extension SearchViewModelProtocol {
         return searchResults
     }
 }
-
-// WIP: Pre-fill the table view with the favourites? Instead of tabbar?
 
 // TODO: This feels unneccessarily naughty, but it works!
 private class SubtitleCell: UITableViewCell {

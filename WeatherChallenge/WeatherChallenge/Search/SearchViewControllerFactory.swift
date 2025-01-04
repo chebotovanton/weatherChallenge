@@ -56,8 +56,6 @@ final class SearchViewControllerFactory {
         )
         let searchViewController = SearchViewController(viewModel: viewModel)
         searchNavController.viewControllers = [searchViewController]
-        searchViewController.tabBarItem.title = "Search"
-        searchViewController.tabBarItem.image = UIImage(systemName: "magnifyingglass")
         
         return searchNavController
     }
