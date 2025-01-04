@@ -40,13 +40,18 @@ final class SearchViewControllerFactory {
             )
         )
         
+        let favoritesService = FavoritesService(
+            userDefaults: UserDefaults.standard
+        )
+        
         let viewModel = SearchViewModel(
             router: router,
             searchService: LocationSearchService(
                 apiKeyProvider: apiKeyProvider,
                 resultsLimit: 10,
                 urlSession: urlSession
-            )
+            ),
+            favoritesService: favoritesService
         )
         let searchViewController = SearchViewController(viewModel: viewModel)
         searchNavController.viewControllers = [searchViewController]
