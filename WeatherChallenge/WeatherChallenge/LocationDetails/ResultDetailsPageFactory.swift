@@ -10,13 +10,16 @@ import UIKit
 final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
     private let currentWeatherCellViewModelFactory: CurrentWeatherCellViewModelFactoryProtocol
     private let forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol
+    private let favoritesService: FavoritesServiceProtocol
     
     init(
         currentWeatherCellViewModelFactory: CurrentWeatherCellViewModelFactoryProtocol,
-        forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol
+        forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol,
+        favoritesService: FavoritesServiceProtocol
     ) {
         self.currentWeatherCellViewModelFactory = currentWeatherCellViewModelFactory
         self.forecastCellViewModelFactory = forecastCellViewModelFactory
+        self.favoritesService = favoritesService
     }
     
     func createResultDetailsController(Location: Location) -> UIViewController {
@@ -37,7 +40,8 @@ final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
                 currentWeatherItem,
                 forecastItem
             ],
-            router: router
+            router: router,
+            favoritesService: favoritesService
         )
         let viewController = LocationDetailsViewController(viewModel: viewModel)
         viewController.title = Location.name

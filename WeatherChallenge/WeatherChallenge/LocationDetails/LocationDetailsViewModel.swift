@@ -12,19 +12,26 @@ protocol LocationDetailsRouterProtocol {
 }
 
 final class LocationDetailsViewModel: LocationDetailsViewModelProtocol {
+    var favoriteButtonTitle: Observable<String> = Observable("")
+    
     var viewData: LocationDetailsViewData
     
     private let location: Location
     private let router: LocationDetailsRouterProtocol
+    private let favoritesService: FavoritesServiceProtocol
     
     init(
         location: Location,
         weatherItems: [WeatherItemProtocol],
-        router: LocationDetailsRouterProtocol
+        router: LocationDetailsRouterProtocol,
+        favoritesService: FavoritesServiceProtocol
     ) {
         self.location = location
         self.viewData = LocationDetailsViewData(weatherItems: weatherItems)
         self.router = router
+        self.favoritesService = favoritesService
+        
+        updateFavoriteStatus()
     }
     
     func viewDidAppear() {
@@ -33,5 +40,31 @@ final class LocationDetailsViewModel: LocationDetailsViewModelProtocol {
     
     func close() {
         router.goBack()
+    }
+    
+    func favoriteButtonClicked() {
+        Task { [weak self] in
+            guard let self = self else { return }
+            let isFavorite = await favoritesService.hasFavorite(location: location)
+            if isFavorite {
+                await favoritesService.removeFavorite(location: location)
+            } else {
+                await favoritesService.addFavorite(location: location)
+            }
+            
+            updateFavoriteStatus()
+        }
+    }
+    
+    private func updateFavoriteStatus() {
+        Task { [weak self] in
+            guard let self = self else { return }
+            let isFavorite = await favoritesService.hasFavorite(location: location)
+            let newFavoriteButtonTitle = isFavorite ? "Remove" : "Add"
+         
+            DispatchQueue.main.async { [weak self] in
+                self?.favoriteButtonTitle.value = newFavoriteButtonTitle
+            }
+        }
     }
 }

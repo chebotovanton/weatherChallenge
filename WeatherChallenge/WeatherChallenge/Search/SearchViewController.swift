@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct Location: Equatable, Decodable {
+struct Location: Equatable, Codable {
     let name: String
     let country: String
     let lat: Double

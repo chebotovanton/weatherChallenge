@@ -32,16 +32,17 @@ final class SearchViewControllerFactory {
             urlSession: urlSession
         )
         
+        let favoritesService = FavoritesService(
+            userDefaults: UserDefaults.standard
+        )
+        
         let router = SearchRouter(
             navigationController: searchNavController,
             resultDetailsPageFactory: ResultDetailsPageFactory(
                 currentWeatherCellViewModelFactory: currentWeatherCellViewModelFactory,
-                forecastCellViewModelFactory: forecastCellViewModelFactory
+                forecastCellViewModelFactory: forecastCellViewModelFactory,
+                favoritesService: favoritesService
             )
-        )
-        
-        let favoritesService = FavoritesService(
-            userDefaults: UserDefaults.standard
         )
         
         let viewModel = SearchViewModel(
