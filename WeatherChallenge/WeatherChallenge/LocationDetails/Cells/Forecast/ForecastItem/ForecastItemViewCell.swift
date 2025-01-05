@@ -69,7 +69,7 @@ final class ForecastItemViewCell: UICollectionViewCell {
         
         // WIP: Icon color accidentaly matches systemGray6 color
         iconView.backgroundColor = .white
-        iconView.contentMode = .center
+        iconView.contentMode = .scaleAspectFit
     }
     
     private func updateViewData(viewData: ViewData) {

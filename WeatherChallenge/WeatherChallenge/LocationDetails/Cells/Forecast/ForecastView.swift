@@ -17,7 +17,7 @@ final class ForecastView: UIView, UICollectionViewDataSource {
     override init(frame: CGRect) {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 90, height: 120)
+        layout.itemSize = CGSize(width: 120, height: 160)
         layout.minimumInteritemSpacing = 8
         self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         

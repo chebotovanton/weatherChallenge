@@ -32,7 +32,7 @@ final class ForecastTableItem: WeatherItemProtocol {
         tableView.register(ForecastCell.self, forCellReuseIdentifier: forecastCellIdentifier)
     }
 
-    func preferredCellHeight() -> CGFloat { 120 }
+    func preferredCellHeight() -> CGFloat { 160 }
 
     func createCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: forecastCellIdentifier, for: indexPath)
