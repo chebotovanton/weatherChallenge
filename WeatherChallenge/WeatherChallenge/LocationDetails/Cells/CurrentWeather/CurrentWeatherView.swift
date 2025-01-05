@@ -30,8 +30,19 @@ final class CurrentWeatherView: UIView {
 
             let stackView = UIStackView(
                 arrangedSubviews: [
+                    {
+                        let label = UILabel()
+                        label.text = "High: "
+                        label.font = UIFont.preferredFont(forTextStyle: .subheadline)
+                        return label
+                    }(),
                     highLabel,
-                    // WIP: Add some spacer here
+                    {
+                        let label = UILabel()
+                        label.text = "Low: "
+                        label.font = UIFont.preferredFont(forTextStyle: .subheadline)
+                        return label
+                    }(),
                     lowLabel
                 ]
             )
@@ -40,6 +51,10 @@ final class CurrentWeatherView: UIView {
             stackView.axis = .horizontal
             stackView.alignment = .center
             stackView.distribution = .equalSpacing
+            stackView.spacing = 16
+
+            highLabel.font = UIFont.preferredFont(forTextStyle: .headline)
+            lowLabel.font = UIFont.preferredFont(forTextStyle: .headline)
         }
 
         required init?(coder: NSCoder) {
@@ -69,10 +84,12 @@ final class CurrentWeatherView: UIView {
             ]
         )
         addSubview(stackView)
-        stackView.pinToSuperviewEdges()
+        stackView.pinToSuperviewEdges(insets: UIEdgeInsets(top: 32, left: 16, bottom: 32, right: 16))
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.distribution = .equalSpacing
+
+        tempLabel.font = UIFont.preferredFont(forTextStyle: .largeTitle)
     }
 
     required init?(coder: NSCoder) {
