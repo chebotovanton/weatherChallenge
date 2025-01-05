@@ -29,7 +29,9 @@ final class SearchViewControllerFactory {
         )
         let currentWeatherCellViewModelFactory = CurrentWeatherCellViewModelFactory(
             urlFormatter: currentWeatherUrlFormatter,
-            urlSession: urlSession
+            urlSession: urlSession,
+            // WIP: Share this tempFormatter
+            tempFormatter: TemperatureFormatter()
         )
         
         let favoritesService = FavoritesService(

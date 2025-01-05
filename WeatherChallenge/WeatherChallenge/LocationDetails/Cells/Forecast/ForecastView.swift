@@ -50,11 +50,16 @@ final class ForecastView: UIView, UICollectionViewDataSource {
               indexPath.item < forecastItems.count else { return cell }
         
         let forecastItem = forecastItems[indexPath.item]
+
         // WIP: ForecastView shouldn't know about the viewModel creation
+        let urlSessionConfig = URLSessionConfiguration.default
+        urlSessionConfig.httpMaximumConnectionsPerHost = 3
+        let urlSession = URLSession(configuration: urlSessionConfig)
         let viewModel = ForecastItemCellViewModel(
             forecastItem: forecastItem,
             tempFormatter: TemperatureFormatter(),
-            timeFormatter: TimestampFormatter()
+            timeFormatter: TimestampFormatter(),
+            urlSession: urlSession
         )
         forecastItemCell.configure(viewModel: viewModel)
         

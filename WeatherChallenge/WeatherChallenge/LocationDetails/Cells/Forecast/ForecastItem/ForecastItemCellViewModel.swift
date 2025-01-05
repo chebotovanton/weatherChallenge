@@ -23,18 +23,21 @@ final class ForecastItemCellViewModel: ForecastItemCellViewModelProtocol {
     private let forecastItem: ForecastItem
     private let tempFormatter: TemperatureFormatterProtocol
     private let timeFormatter: TimestampFormatterProtocol
+    private let urlSession: URLSession
     private static let imageUrl = "https://openweathermap.org/img/wn/%@@2x.png"
     private var imageLoadingTask: URLSessionDataTask?
     
     init(
         forecastItem: ForecastItem,
         tempFormatter: TemperatureFormatterProtocol,
-        timeFormatter: TimestampFormatterProtocol
+        timeFormatter: TimestampFormatterProtocol,
+        urlSession: URLSession
     ) {
         self.forecastItem = forecastItem
         self.tempFormatter = tempFormatter
         self.timeFormatter = timeFormatter
-        
+        self.urlSession = urlSession
+
         let initialViewData = ForecastItemViewCell.ViewData(
             timeDescription: timeFormatter.timestampDescription(timestamp: forecastItem.dt),
             icon: nil,
@@ -44,11 +47,10 @@ final class ForecastItemCellViewModel: ForecastItemCellViewModelProtocol {
     }
     
     func startLoadingImage() {
-        // WIP: Inject URLSession, limit the number of parallel loads
         guard let iconString = forecastItem.weather.first?.icon else { return }
         let urlString = String(format: Self.imageUrl, iconString)
         guard let url = URL(string: urlString) else { return }
-        let task = URLSession(configuration: .default).dataTask(with: URLRequest(url: url)) { [weak self] data, _, _ in
+        let task = urlSession.dataTask(with: URLRequest(url: url)) { [weak self] data, _, _ in
             guard let self = self,
                   let data = data,
                   let image = UIImage(data: data) else { return }
