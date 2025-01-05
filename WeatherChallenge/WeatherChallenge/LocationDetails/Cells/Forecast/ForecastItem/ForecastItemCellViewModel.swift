@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 import UIKit
 
 protocol TemperatureFormatterProtocol {
@@ -17,8 +18,8 @@ protocol TimestampFormatterProtocol {
 }
 
 final class ForecastItemCellViewModel: ForecastItemCellViewModelProtocol {
-    var viewData: Observable<ForecastItemViewCell.ViewData>
-    
+    let viewData: CurrentValueSubject<ForecastItemViewCell.ViewData, Never>
+
     private let forecastItem: ForecastItem
     private let tempFormatter: TemperatureFormatterProtocol
     private let timeFormatter: TimestampFormatterProtocol
@@ -34,13 +35,12 @@ final class ForecastItemCellViewModel: ForecastItemCellViewModelProtocol {
         self.tempFormatter = tempFormatter
         self.timeFormatter = timeFormatter
         
-        self.viewData = Observable(
-            ForecastItemViewCell.ViewData(
-                timeDescription: timeFormatter.timestampDescription(timestamp: forecastItem.dt),
-                icon: nil,
-                tempDescription: tempFormatter.temperatureDescription(temp: forecastItem.main.temp)
-            )
+        let initialViewData = ForecastItemViewCell.ViewData(
+            timeDescription: timeFormatter.timestampDescription(timestamp: forecastItem.dt),
+            icon: nil,
+            tempDescription: tempFormatter.temperatureDescription(temp: forecastItem.main.temp)
         )
+        self.viewData = CurrentValueSubject(initialViewData)
     }
     
     func startLoadingImage() {
@@ -52,14 +52,11 @@ final class ForecastItemCellViewModel: ForecastItemCellViewModelProtocol {
             guard let self = self,
                   let data = data,
                   let image = UIImage(data: data) else { return }
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                viewData.value = ForecastItemViewCell.ViewData(
-                    timeDescription: viewData.value.timeDescription,
-                    icon: image,
-                    tempDescription: viewData.value.tempDescription
-                )
-            }
+            viewData.value = ForecastItemViewCell.ViewData(
+                timeDescription: viewData.value.timeDescription,
+                icon: image,
+                tempDescription: viewData.value.tempDescription
+            )
         }
         task.resume()
     }

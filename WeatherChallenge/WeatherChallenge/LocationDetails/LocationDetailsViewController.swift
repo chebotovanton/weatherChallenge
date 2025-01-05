@@ -6,9 +6,10 @@
 //
 
 import UIKit
+import Combine
 
 protocol LocationDetailsViewModelProtocol {
-    var favoriteButtonTitle: Observable<String> { get }
+    var favoriteButtonTitle: CurrentValueSubject<String, Never> { get }
     var viewData: LocationDetailsViewData { get }
     
     func viewDidAppear()
@@ -30,7 +31,8 @@ struct LocationDetailsViewData {
 final class LocationDetailsViewController: UIViewController {
     private let viewModel: LocationDetailsViewModelProtocol
     private let tableView = UITableView()
-    
+    private var favoriteButtonTitleObserver: AnyCancellable?
+
     init(viewModel: LocationDetailsViewModelProtocol) {
         self.viewModel = viewModel
         
@@ -74,11 +76,9 @@ final class LocationDetailsViewController: UIViewController {
         let leftItem = UIBarButtonItem(title: "Close", image: nil, target: self, action: #selector(close))
         self.navigationItem.setLeftBarButton(leftItem, animated: false)
         
-        setupFavoriteButton()
-        
-        viewModel.favoriteButtonTitle.subscribe(observer: self) { [weak self] _, _ in
-            self?.setupFavoriteButton()
-        }
+        favoriteButtonTitleObserver = viewModel.favoriteButtonTitle
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValue in self?.setupFavoriteButton() }
     }
     
     private func setupFavoriteButton() {

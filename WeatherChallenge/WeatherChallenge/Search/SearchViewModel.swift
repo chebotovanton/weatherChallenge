@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 protocol SearchRouterProtocol {
     func navigateToResultDetailsPage(
@@ -16,11 +17,10 @@ protocol SearchRouterProtocol {
 
 // WIP: Unit tests
 final class SearchViewModel: SearchViewModelProtocol {
-    
     // TODO: This should be injected properly via some localisation service
     private static let emptySearchRequestMessage = "Start typing to search"
     
-    var viewState: Observable<SearchViewState> = Observable(
+    var viewState: CurrentValueSubject<SearchViewState, Never> = CurrentValueSubject(
         .error(emptySearchRequestMessage)
     )
     
@@ -59,9 +59,7 @@ final class SearchViewModel: SearchViewModelProtocol {
                 }
             }()
             
-            DispatchQueue.main.async { [weak self] in
-                self?.viewState.value = newState
-            }
+            viewState.value = newState
         }
     }
     

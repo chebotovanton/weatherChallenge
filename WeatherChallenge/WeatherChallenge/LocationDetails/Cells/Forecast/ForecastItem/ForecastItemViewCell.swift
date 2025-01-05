@@ -6,10 +6,11 @@
 //
 
 import UIKit
+import Combine
 
 protocol ForecastItemCellViewModelProtocol {
-    var viewData: Observable<ForecastItemViewCell.ViewData> { get }
-    
+    var viewData: CurrentValueSubject<ForecastItemViewCell.ViewData, Never> { get }
+
     func startLoadingImage()
     func cancelLoadingImage()
 }
@@ -26,7 +27,8 @@ final class ForecastItemViewCell: UICollectionViewCell {
     private let iconView = UIImageView()
     private let tempLabel = UILabel()
     private var viewModel: ForecastItemCellViewModelProtocol?
-    
+    private var viewDataObserver: AnyCancellable?
+
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView(
             arrangedSubviews: [
@@ -45,11 +47,10 @@ final class ForecastItemViewCell: UICollectionViewCell {
         setupStackViewIfNeeded()
         self.viewModel = viewModel
         
-        viewModel.viewData.subscribe(observer: self) { [weak self] newValue, _ in
-            self?.updateViewData(viewData: newValue)
-        }
-        updateViewData(viewData: viewModel.viewData.value)
-        
+        viewDataObserver = viewModel.viewData
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValue in self?.updateViewData(viewData: newValue) }
+
         viewModel.startLoadingImage()
     }
     

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 struct Location: Equatable, Codable {
     let name: String
@@ -24,8 +25,7 @@ enum SearchViewState: Equatable {
 protocol SearchViewModelProtocol {
     func searchQueryChanged(text: String?)
     func searchResultSelected(Location: Location)
- 
-    var viewState: Observable<SearchViewState> { get }
+    var viewState: CurrentValueSubject<SearchViewState, Never> { get }
 }
 
 // TODO: I know it's possible to achieve a similar result with UISearchController, but I haven't worked with it in a while, and this crude manual approach seems to be working ok for our needs
@@ -36,9 +36,9 @@ final class SearchViewController: UIViewController {
     private let activityIndicator = UIActivityIndicatorView(style: .large)
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private let searchResultCellIdentifier = "searchResultCellIdentifier"
-    
-    private var searchBar = UISearchBar()
-    
+    private let searchBar = UISearchBar()
+    private var viewStateObserver: AnyCancellable?
+
     init(viewModel: SearchViewModelProtocol) {
         self.viewModel = viewModel
         
@@ -57,9 +57,10 @@ final class SearchViewController: UIViewController {
         setupSearchController()
         setupTableView()
         setupAccessoryViews()
-        observeSearchResults()
-        
-        updateViewState(viewState: viewModel.viewState.value)
+
+        viewStateObserver = viewModel.viewState
+            .receive(on: DispatchQueue.main)
+            .sink {  [weak self] newValue in self?.updateViewState(viewState: newValue) }
     }
 
     private func setupSearchController() {
@@ -93,14 +94,7 @@ final class SearchViewController: UIViewController {
         activityIndicator.centerInSuperview()
         activityIndicator.color = .black
     }
-    
-    private func observeSearchResults() {
-        viewModel.viewState.subscribe(observer: self) { [weak self] newValue, oldValue in
-            guard let self = self, newValue != oldValue else { return }
-            self.updateViewState(viewState: newValue)
-        }
-    }
-    
+
     private func updateViewState(viewState: SearchViewState) {
         switch viewState {
         case .loading:

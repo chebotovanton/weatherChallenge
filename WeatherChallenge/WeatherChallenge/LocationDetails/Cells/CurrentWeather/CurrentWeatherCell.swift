@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 struct CurrentWeatherData: Decodable {
     struct Weather: Decodable {
@@ -24,8 +25,8 @@ struct CurrentWeatherData: Decodable {
 }
 
 protocol CurrentWeatherCellViewModelProtocol {
-    var viewData: Observable<WeatherDataContainer<CurrentWeatherData>> { get }
-    
+    var viewData: CurrentValueSubject<WeatherDataContainer<CurrentWeatherData>, Never> { get }
+
     func startLoadingData()
 }
 
@@ -33,22 +34,17 @@ final class CurrentWeatherCell: UITableViewCell {
     private var viewModel: CurrentWeatherCellViewModelProtocol?
     private let statusLabel = UILabel()
     private let weatherView = CurrentWeatherView()
-    
+    private var viewDataObserver: AnyCancellable?
+
     func configure(viewModel: CurrentWeatherCellViewModelProtocol) {
         configureAppearance()
         
         self.viewModel = viewModel
         
-        self.viewModel?.viewData.subscribe(
-            observer: self,
-            block: { [weak self] newValue, oldValue in
-                guard let self = self else { return }
-                self.updateState(newState: newValue)
-            }
-        )
-        
-        self.updateState(newState: viewModel.viewData.value)
-        
+        viewDataObserver = viewModel.viewData
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValue in self?.updateState(newState: newValue) }
+
         viewModel.startLoadingData()
     }
     
