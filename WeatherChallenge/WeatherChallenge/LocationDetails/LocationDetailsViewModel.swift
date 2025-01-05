@@ -6,14 +6,15 @@
 //
 
 import Foundation
+import Combine
 
 protocol LocationDetailsRouterProtocol {
     func goBack()
 }
 
 final class LocationDetailsViewModel: LocationDetailsViewModelProtocol {
-    var favoriteButtonTitle: Observable<String> = Observable("")
-    
+    var favoriteButtonTitle: CurrentValueSubject<String, Never> = CurrentValueSubject("")
+
     var viewData: LocationDetailsViewData
     
     private let location: Location
@@ -62,9 +63,7 @@ final class LocationDetailsViewModel: LocationDetailsViewModelProtocol {
             let isFavorite = await favoritesService.hasFavorite(location: location)
             let newFavoriteButtonTitle = isFavorite ? "Remove" : "Add"
          
-            DispatchQueue.main.async { [weak self] in
-                self?.favoriteButtonTitle.value = newFavoriteButtonTitle
-            }
+            favoriteButtonTitle.value = newFavoriteButtonTitle
         }
     }
 }

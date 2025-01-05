@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import Combine
 
 final class CurrentWeatherCellViewModel<CurrentWeatherLoader>: CurrentWeatherCellViewModelProtocol
 where CurrentWeatherLoader: NetworkServiceProtocol,
       CurrentWeatherLoader.ReturnType == CurrentWeatherData {
-    var viewData: Observable<WeatherDataContainer<CurrentWeatherData>> = Observable(.loading)
-    
+    var viewData: CurrentValueSubject<WeatherDataContainer<CurrentWeatherData>, Never> = CurrentValueSubject(.loading)
+
     private let location: Location
     private let weatherLoadingService: CurrentWeatherLoader
     
@@ -37,10 +38,7 @@ where CurrentWeatherLoader: NetworkServiceProtocol,
                 }
             }()
             
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.viewData.value = currentWeatherState
-            }
+            viewData.value = currentWeatherState
         }
     }
 }

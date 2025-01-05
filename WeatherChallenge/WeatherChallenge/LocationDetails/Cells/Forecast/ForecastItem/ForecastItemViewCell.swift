@@ -51,8 +51,6 @@ final class ForecastItemViewCell: UICollectionViewCell {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newValue in self?.updateViewData(viewData: newValue) }
 
-        updateViewData(viewData: viewModel.viewData.value)
-        
         viewModel.startLoadingImage()
     }
     

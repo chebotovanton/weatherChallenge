@@ -48,8 +48,6 @@ final class ForecastCell: UITableViewCell {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newValue in self?.updateState(newState: newValue) }
         
-        self.updateState(newState: viewModel.viewData.value)
-        
         viewModel.startLoadingData()
     }
     
