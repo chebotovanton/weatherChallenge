@@ -8,21 +8,37 @@
 import Foundation
 import UIKit
 
+protocol TemperatureFormatterProtocol {
+    func temperatureDescription(temp: Float) -> String
+}
+
+protocol TimestampFormatterProtocol {
+    func timestampDescription(timestamp: Int) -> String
+}
+
 final class ForecastItemCellViewModel: ForecastItemCellViewModelProtocol {
     var viewData: Observable<ForecastItemViewCell.ViewData>
     
     private let forecastItem: ForecastItem
+    private let tempFormatter: TemperatureFormatterProtocol
+    private let timeFormatter: TimestampFormatterProtocol
+    private static let imageUrl = "https://openweathermap.org/img/wn/%@@2x.png"
     private var imageLoadingTask: URLSessionDataTask?
     
     init(
-        forecastItem: ForecastItem
+        forecastItem: ForecastItem,
+        tempFormatter: TemperatureFormatterProtocol,
+        timeFormatter: TimestampFormatterProtocol
     ) {
         self.forecastItem = forecastItem
+        self.tempFormatter = tempFormatter
+        self.timeFormatter = timeFormatter
+        
         self.viewData = Observable(
             ForecastItemViewCell.ViewData(
-                timeDescription: TimestampFormatter.timestampDescription(timestamp: forecastItem.dt),
+                timeDescription: timeFormatter.timestampDescription(timestamp: forecastItem.dt),
                 icon: nil,
-                tempDescription: TemperatureFormatter.temperatureDescription(temp: forecastItem.main.temp)
+                tempDescription: tempFormatter.temperatureDescription(temp: forecastItem.main.temp)
             )
         )
     }
@@ -30,10 +46,9 @@ final class ForecastItemCellViewModel: ForecastItemCellViewModelProtocol {
     func startLoadingImage() {
         // WIP: Inject everything here
         guard let iconString = forecastItem.weather.first?.icon else { return }
-        let urlString = String(format: "https://openweathermap.org/img/wn/%@@2x.png", iconString)
+        let urlString = String(format: Self.imageUrl, iconString)
         guard let url = URL(string: urlString) else { return }
-        let urlRequest = URLRequest(url: url)
-        let task = URLSession(configuration: .default).dataTask(with: urlRequest) { [weak self] data, _, _ in
+        let task = URLSession(configuration: .default).dataTask(with: URLRequest(url: url)) { [weak self] data, _, _ in
             guard let self = self,
                   let data = data,
                   let image = UIImage(data: data) else { return }
@@ -51,29 +66,5 @@ final class ForecastItemCellViewModel: ForecastItemCellViewModelProtocol {
     
     func cancelLoadingImage() {
         imageLoadingTask?.cancel()
-    }
-}
-
-// WIP: Add tests for this
-final class TemperatureFormatter {
-    static func temperatureDescription(temp: Float) -> String {
-        let result = String(Int(temp))
-        if temp > 1 {
-            return "+" + result
-        } else {
-            return result
-        }
-    }
-}
-
-final class TimestampFormatter {
-    // WIP: This shouldn't be static!
-    static func timestampDescription(timestamp: Int) -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(timestamp))
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeStyle = .short
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeZone = .current
-        return dateFormatter.string(from: date)
     }
 }

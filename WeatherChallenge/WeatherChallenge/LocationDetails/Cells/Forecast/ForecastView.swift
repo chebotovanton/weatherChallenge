@@ -51,7 +51,11 @@ final class ForecastView: UIView, UICollectionViewDataSource {
         
         let forecastItem = forecastItems[indexPath.item]
         // WIP: ForecastView shouldn't know about the viewModel creation
-        let viewModel = ForecastItemCellViewModel(forecastItem: forecastItem)
+        let viewModel = ForecastItemCellViewModel(
+            forecastItem: forecastItem,
+            tempFormatter: TemperatureFormatter(),
+            timeFormatter: TimestampFormatter()
+        )
         forecastItemCell.configure(viewModel: viewModel)
         
         return forecastItemCell
