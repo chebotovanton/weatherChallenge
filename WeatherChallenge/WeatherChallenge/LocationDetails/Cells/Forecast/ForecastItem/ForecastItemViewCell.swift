@@ -40,6 +40,7 @@ final class ForecastItemViewCell: UICollectionViewCell {
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.distribution = .equalSpacing
+        stackView.spacing = 4
         return stackView
     }()
     
@@ -59,7 +60,7 @@ final class ForecastItemViewCell: UICollectionViewCell {
         
         addSubview(stackView)
         stackView.pinToSuperviewEdges(insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8))
-        
+
         backgroundColor = .systemGray6
         layer.cornerRadius = 8
         
@@ -67,8 +68,8 @@ final class ForecastItemViewCell: UICollectionViewCell {
         timeLabel.numberOfLines = 2
         tempLabel.font = UIFont.preferredFont(forTextStyle: .title1)
         
-        // WIP: Icon color accidentaly matches systemGray6 color
         iconView.backgroundColor = .white
+        iconView.layer.cornerRadius = 8
         iconView.contentMode = .scaleAspectFit
     }
     
