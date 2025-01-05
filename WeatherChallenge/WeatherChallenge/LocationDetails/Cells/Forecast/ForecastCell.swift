@@ -56,7 +56,6 @@ final class ForecastCell: UITableViewCell {
     
     private func configureAppearance() {
         self.selectionStyle = .none
-        self.backgroundColor = .green
         
         addSubview(statusLabel)
         statusLabel.centerInSuperview()
