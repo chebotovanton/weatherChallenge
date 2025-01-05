@@ -11,7 +11,7 @@ protocol ResultDetailsPageFactoryProtocol {
     func createResultDetailsController(
         location: Location,
         locationDetailsRouterDelegate: LocationDetailsRouterDelegateProtocol
-    ) -> UIViewController
+    ) -> (UIViewController, LocationDetailsRouterProtocol)
 }
 
 // WIP: Add unit tests
@@ -31,11 +31,12 @@ final class SearchRouter: SearchRouterProtocol {
         location: Location,
         locationDetailsRouterDelegate: LocationDetailsRouterDelegateProtocol
     ) {
-        let viewController = resultDetailsPageFactory.createResultDetailsController(
+        let (viewController, router) = resultDetailsPageFactory.createResultDetailsController(
             location: location,
             locationDetailsRouterDelegate: locationDetailsRouterDelegate
         )
         let navVC = UINavigationController(rootViewController: viewController)
         navigationController.present(navVC, animated: true)
+        router.setPresentingViewController(vc: navigationController)
     }
 }

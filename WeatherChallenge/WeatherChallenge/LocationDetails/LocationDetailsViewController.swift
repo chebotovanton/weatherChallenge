@@ -119,15 +119,4 @@ extension LocationDetailsViewController: UITableViewDelegate {
         
         return item.preferredCellHeight()
     }
-    
-// TODO: We can use something like this to postpone the data loading if we have more items than 2
-//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        let weatherItems = viewModel.viewData.weatherItems
-//        guard indexPath.item < weatherItems.count else {
-//            return UITableViewCell()
-//        }
-//        let item = weatherItems[indexPath.item]
-//        item.cellWillAppearOnScreen()
-//    }
-    
 }

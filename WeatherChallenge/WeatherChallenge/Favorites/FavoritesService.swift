@@ -8,7 +8,7 @@
 import Foundation
 
 protocol FavoritesServiceProtocol {
-    // TODO: async added to support any potential future Favorite storage implementation which may be asynchronous
+    // TODO: async added to support any potential future Favorite storage implementation which may be more complex than UserDefaults
     func getFavorites() async -> [Location]
     func hasFavorite(location: Location) async -> Bool
     func addFavorite(location: Location) async

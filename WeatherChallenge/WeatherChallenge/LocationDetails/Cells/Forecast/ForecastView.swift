@@ -12,11 +12,12 @@ final class ForecastView: UIView, UICollectionViewDataSource {
     private let cellReuseIdentifier = "cellReuseIdentifier"
     private let collectionView: UICollectionView
     private var forecastData: ForecastData?
-    
+    var forecastItemCellViewModelFactory: ForecastItemCellViewModelFactoryProtocol?
+
     override init(frame: CGRect) {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 90, height: 120)
+        layout.itemSize = CGSize(width: 120, height: 160)
         layout.minimumInteritemSpacing = 8
         self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         
@@ -47,18 +48,13 @@ final class ForecastView: UIView, UICollectionViewDataSource {
         
         guard let forecastItemCell = cell as? ForecastItemViewCell,
               let forecastItems = self.forecastData?.list,
+              let forecastItemCellViewModelFactory = forecastItemCellViewModelFactory,
               indexPath.item < forecastItems.count else { return cell }
         
         let forecastItem = forecastItems[indexPath.item]
-        // WIP: ForecastView shouldn't know about the viewModel creation
-        let viewModel = ForecastItemCellViewModel(
-            forecastItem: forecastItem,
-            tempFormatter: TemperatureFormatter(),
-            timeFormatter: TimestampFormatter()
-        )
+        let viewModel = forecastItemCellViewModelFactory.createViewModel(forecastItem: forecastItem)
         forecastItemCell.configure(viewModel: viewModel)
         
         return forecastItemCell
     }
 }
-

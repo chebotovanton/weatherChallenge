@@ -27,20 +27,35 @@ final class SearchViewControllerFactory {
             urlFormat: "https://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&appid=%@",
             apiKeyProvider: apiKeyProvider
         )
+
+        let tempFormatter = TemperatureFormatter()
         let currentWeatherCellViewModelFactory = CurrentWeatherCellViewModelFactory(
             urlFormatter: currentWeatherUrlFormatter,
-            urlSession: urlSession
+            urlSession: urlSession,
+            tempFormatter: tempFormatter,
+            weatherIconLoadingService: WeatherIconLoadingService()
         )
         
         let favoritesService = FavoritesService(
             userDefaults: UserDefaults.standard
         )
-        
+
+        let iconUrlSessionConfig = URLSessionConfiguration.default
+        iconUrlSessionConfig.httpMaximumConnectionsPerHost = 3
+        let iconUrlSession = URLSession(configuration: iconUrlSessionConfig)
+
+        let forecastItemCellViewModelFactory = ForecastItemCellViewModelFactory(
+            urlSession: iconUrlSession,
+            tempFormatter: tempFormatter,
+            timeFormatter: TimestampFormatter()
+        )
+
         let router = SearchRouter(
             navigationController: searchNavController,
             resultDetailsPageFactory: ResultDetailsPageFactory(
                 currentWeatherCellViewModelFactory: currentWeatherCellViewModelFactory,
                 forecastCellViewModelFactory: forecastCellViewModelFactory,
+                forecastItemCellViewModelFactory: forecastItemCellViewModelFactory,
                 favoritesService: favoritesService
             )
         )

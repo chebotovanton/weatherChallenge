@@ -10,13 +10,19 @@ import Foundation
 final class CurrentWeatherCellViewModelFactory: CurrentWeatherCellViewModelFactoryProtocol {
     private let urlFormatter: UrlFormatterProtocol
     private let urlSession: URLSession
-    
+    private let tempFormatter: TemperatureFormatterProtocol
+    private let weatherIconLoadingService: WeatherIconLoadingServiceProtocol
+
     init(
         urlFormatter: UrlFormatterProtocol,
-        urlSession: URLSession
+        urlSession: URLSession,
+        tempFormatter: TemperatureFormatterProtocol,
+        weatherIconLoadingService: WeatherIconLoadingServiceProtocol
     ) {
         self.urlFormatter = urlFormatter
         self.urlSession = urlSession
+        self.tempFormatter = tempFormatter
+        self.weatherIconLoadingService = weatherIconLoadingService
     }
     
     func createCurrentWeatherViewModelFactory(location: Location) -> any CurrentWeatherCellViewModelProtocol {
@@ -27,7 +33,9 @@ final class CurrentWeatherCellViewModelFactory: CurrentWeatherCellViewModelFacto
         
         let viewModel = CurrentWeatherCellViewModel(
             location: location,
-            weatherLoadingService: weatherLoadingService
+            weatherLoadingService: weatherLoadingService,
+            tempFormatter: tempFormatter,
+            iconLoadingService: weatherIconLoadingService
         )
         
         return viewModel

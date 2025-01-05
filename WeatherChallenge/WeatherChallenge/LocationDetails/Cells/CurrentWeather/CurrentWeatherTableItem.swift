@@ -34,10 +34,10 @@ final class CurrentWeatherTableItem: WeatherItemProtocol {
     func createCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: currentWeatherCellIdentifier, for: indexPath)
         guard let currentWeatherCell = cell as? CurrentWeatherCell else { return cell }
-        
-        // TODO: This approach will make sense if we have multiple similar items, reuse cells, but don't want to reload data
+
         let viewModel = cellViewModel ?? currentWeatherCellViewModelFactory.createCurrentWeatherViewModelFactory(location: location)
         currentWeatherCell.configure(viewModel: viewModel)
+        // TODO: This approach will make sense if we have multiple similar items, reuse cells, but don't want to reload data
         cellViewModel = viewModel
         
         return currentWeatherCell

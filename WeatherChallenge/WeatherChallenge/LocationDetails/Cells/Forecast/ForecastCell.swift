@@ -39,11 +39,15 @@ final class ForecastCell: UITableViewCell {
     private let forecastView = ForecastView()
     private var viewDataObserver: AnyCancellable?
 
-    func configure(viewModel: ForecastCellViewModelProtocol) {
+    func configure(
+        viewModel: ForecastCellViewModelProtocol,
+        forecastItemCellViewModelFactory: ForecastItemCellViewModelFactoryProtocol
+    ) {
         configureAppearance()
         
         self.viewModel = viewModel
-        
+        forecastView.forecastItemCellViewModelFactory = forecastItemCellViewModelFactory
+
         viewDataObserver = viewModel.viewData
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newValue in self?.updateState(newState: newValue) }

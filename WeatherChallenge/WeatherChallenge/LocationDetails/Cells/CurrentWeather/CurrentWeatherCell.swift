@@ -12,6 +12,7 @@ struct CurrentWeatherData: Decodable {
     struct Weather: Decodable {
         let main: String
         let description: String
+        let icon: String
     }
     
     struct Main: Decodable {
@@ -25,7 +26,7 @@ struct CurrentWeatherData: Decodable {
 }
 
 protocol CurrentWeatherCellViewModelProtocol {
-    var viewData: CurrentValueSubject<WeatherDataContainer<CurrentWeatherData>, Never> { get }
+    var viewData: CurrentValueSubject<WeatherDataContainer<CurrentWeatherView.ViewData>, Never> { get }
 
     func startLoadingData()
 }
@@ -58,7 +59,7 @@ final class CurrentWeatherCell: UITableViewCell {
         weatherView.pinToSuperviewEdges()
     }
     
-    private func updateState(newState: WeatherDataContainer<CurrentWeatherData>) {
+    private func updateState(newState: WeatherDataContainer<CurrentWeatherView.ViewData>) {
         switch newState {
         case .loading:
             self.statusLabel.isHidden = false
@@ -73,71 +74,5 @@ final class CurrentWeatherCell: UITableViewCell {
             self.weatherView.isHidden = false
             self.weatherView.configure(viewData: weatherData)
         }
-    }
-}
-
-// TODO: We can make this view public and reuse it outside of UITableView if needed
-private final class CurrentWeatherView: UIView {
-    
-    private final class HighLowView: UIView {
-        // TODO: Would be nice to introduce some styling-ability by injecting styles into every view and combining those styles for the higher-level views
-        private let highLabel = UILabel()
-        private let lowLabel = UILabel()
-        
-        override init(frame: CGRect) {
-            super.init(frame: frame)
-            
-            let stackView = UIStackView(
-                arrangedSubviews: [
-                    highLabel,
-                    // WIP: Add some spacer here
-                    lowLabel
-                ]
-            )
-            addSubview(stackView)
-            stackView.pinToSuperviewEdges()
-            stackView.axis = .horizontal
-        }
-        
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-        
-        func configure(viewData: CurrentWeatherData.Main) {
-            highLabel.text = String(viewData.temp_max)
-            lowLabel.text = String(viewData.temp_min)
-        }
-    }
-    
-    private let mainLabel = UILabel()
-    private let descriptionLabel = UILabel()
-    private let tempLabel = UILabel()
-    private let highLowView = HighLowView()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        let stackView = UIStackView(
-            arrangedSubviews: [
-                mainLabel,
-                descriptionLabel,
-                tempLabel,
-                highLowView
-            ]
-        )
-        addSubview(stackView)
-        stackView.pinToSuperviewEdges()
-        stackView.axis = .vertical
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func configure(viewData: CurrentWeatherData) {
-        mainLabel.text = viewData.weather.first?.main ?? "Undefined"
-        descriptionLabel.text = viewData.weather.first?.description ?? "Undefined"
-        tempLabel.text = String(viewData.main.temp)
-        highLowView.configure(viewData: viewData.main)
     }
 }
