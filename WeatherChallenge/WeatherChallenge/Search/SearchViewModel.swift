@@ -8,7 +8,10 @@
 import Foundation
 
 protocol SearchRouterProtocol {
-    func navigateToResultDetailsPage(Location: Location)
+    func navigateToResultDetailsPage(
+        location: Location,
+        locationDetailsRouterDelegate: LocationDetailsRouterDelegateProtocol
+    )
 }
 
 // WIP: Unit tests
@@ -95,6 +98,16 @@ final class SearchViewModel: SearchViewModelProtocol {
     }
     
     func searchResultSelected(Location: Location) {
-        router.navigateToResultDetailsPage(Location: Location)
+        router.navigateToResultDetailsPage(
+            location: Location,
+            locationDetailsRouterDelegate: self
+        )
+    }
+}
+
+// WIP: This unnecessarily reloads the screen every time after dismissing the modal
+extension SearchViewModel: LocationDetailsRouterDelegateProtocol {
+    func didDismissLocationDetails() {
+        loadFavorites()
     }
 }

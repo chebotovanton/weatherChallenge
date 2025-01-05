@@ -8,14 +8,14 @@
 import UIKit
 
 protocol CurrentWeatherCellViewModelFactoryProtocol {
-    // WIP: Do I have to expose the type?
-    func createCurrentWeatherViewModelFactory(location: Location) -> CurrentWeatherCellViewModel<NetworkService<CurrentWeatherData>>
+    func createCurrentWeatherViewModelFactory(location: Location) -> any CurrentWeatherCellViewModelProtocol
 }
 
 final class CurrentWeatherTableItem: WeatherItemProtocol {
     private let currentWeatherCellIdentifier = "currentWeatherCellIdentifier"
     private let location: Location
     private let currentWeatherCellViewModelFactory: CurrentWeatherCellViewModelFactoryProtocol
+    private var cellViewModel: CurrentWeatherCellViewModelProtocol?
     
     init(
         location: Location,
@@ -35,10 +35,10 @@ final class CurrentWeatherTableItem: WeatherItemProtocol {
         let cell = tableView.dequeueReusableCell(withIdentifier: currentWeatherCellIdentifier, for: indexPath)
         guard let currentWeatherCell = cell as? CurrentWeatherCell else { return cell }
         
-        let viewModel = currentWeatherCellViewModelFactory.createCurrentWeatherViewModelFactory(location: location)
-        
-        // WIP: Do I wanna keep the view model reference and reuse it on cell reuse?
+        // TODO: This approach will make sense if we have multiple similar items, reuse cells, but don't want to reload data
+        let viewModel = cellViewModel ?? currentWeatherCellViewModelFactory.createCurrentWeatherViewModelFactory(location: location)
         currentWeatherCell.configure(viewModel: viewModel)
+        cellViewModel = viewModel
         
         return currentWeatherCell
     }

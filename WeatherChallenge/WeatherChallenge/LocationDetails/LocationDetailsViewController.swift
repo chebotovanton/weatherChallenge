@@ -8,7 +8,6 @@
 import UIKit
 
 protocol LocationDetailsViewModelProtocol {
-    // WIP: Is this the most refined approach?
     var favoriteButtonTitle: Observable<String> { get }
     var viewData: LocationDetailsViewData { get }
     
@@ -60,6 +59,8 @@ final class LocationDetailsViewController: UIViewController {
         
         tableView.dataSource = self
         tableView.delegate = self
+        
+        tableView.separatorStyle = .none
         
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false

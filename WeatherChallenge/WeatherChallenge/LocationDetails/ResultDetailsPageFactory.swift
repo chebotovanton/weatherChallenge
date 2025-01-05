@@ -22,20 +22,25 @@ final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
         self.favoritesService = favoritesService
     }
     
-    func createResultDetailsController(Location: Location) -> UIViewController {
+    func createResultDetailsController(
+        location: Location,
+        locationDetailsRouterDelegate: LocationDetailsRouterDelegateProtocol
+    ) -> UIViewController {
         let currentWeatherItem = CurrentWeatherTableItem(
-            location: Location,
+            location: location,
             currentWeatherCellViewModelFactory: currentWeatherCellViewModelFactory
         )
         let forecastItem = ForecastTableItem(
-            location: Location,
+            location: location,
             forecastCellViewModelFactory: forecastCellViewModelFactory
         )
         
-        let router = LocationDetailsRouter()
+        let router = LocationDetailsRouter(
+            delegate: locationDetailsRouterDelegate
+        )
         
         let viewModel = LocationDetailsViewModel(
-            location: Location,
+            location: location,
             weatherItems: [
                 currentWeatherItem,
                 forecastItem
@@ -44,7 +49,7 @@ final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
             favoritesService: favoritesService
         )
         let viewController = LocationDetailsViewController(viewModel: viewModel)
-        viewController.title = Location.name
+        viewController.title = location.name
         viewController.view.backgroundColor = .white
         
         router.presentedViewController = viewController

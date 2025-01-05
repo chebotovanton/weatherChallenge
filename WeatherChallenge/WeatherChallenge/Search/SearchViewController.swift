@@ -10,6 +10,7 @@ import UIKit
 struct Location: Equatable, Codable {
     let name: String
     let country: String
+    let state: String
     let lat: Double
     let lon: Double
 }
@@ -33,7 +34,7 @@ final class SearchViewController: UIViewController {
     private let viewModel: SearchViewModelProtocol
     private let errorMessageView = UILabel()
     private let activityIndicator = UIActivityIndicatorView(style: .large)
-    private let tableView = UITableView()
+    private let tableView = UITableView(frame: .zero, style: .grouped)
     private let searchResultCellIdentifier = "searchResultCellIdentifier"
     
     private var searchBar = UISearchBar()
@@ -60,7 +61,7 @@ final class SearchViewController: UIViewController {
         
         updateViewState(viewState: viewModel.viewState.value)
     }
-    
+
     private func setupSearchController() {
         searchBar.delegate = self
         
@@ -72,7 +73,7 @@ final class SearchViewController: UIViewController {
     }
     
     private func setupTableView() {
-        tableView.register(SubtitleCell.self, forCellReuseIdentifier: searchResultCellIdentifier)
+        tableView.register(SearchResultCell.self, forCellReuseIdentifier: searchResultCellIdentifier)
         tableView.dataSource = self
         tableView.delegate = self
         
@@ -139,19 +140,15 @@ extension SearchViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: searchResultCellIdentifier, for: indexPath)
 
-        guard indexPath.item < viewModel.searchResults.count else {
+        guard indexPath.item < viewModel.searchResults.count,
+                let typedCell = cell as? SearchResultCell else {
             return cell
         }
         
         let location = viewModel.searchResults[indexPath.item]
-        configureCell(cell: cell, location: location)
+        typedCell.configure(location: location)
         
         return cell
-    }
-    
-    private func configureCell(cell: UITableViewCell, location: Location) {
-        cell.textLabel?.text = location.name
-        cell.detailTextLabel?.text = location.country
     }
 }
 
@@ -163,22 +160,15 @@ extension SearchViewController: UITableViewDelegate {
         viewModel.searchResultSelected(Location: Location)
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return SearchResultCell.preferredCellHeight
+    }
 }
 
 private extension SearchViewModelProtocol {
     var searchResults: [Location] {
         guard case .loaded(let searchResults) = viewState.value else { return [] }
         return searchResults
-    }
-}
-
-// TODO: This feels unneccessarily naughty, but it works!
-private class SubtitleCell: UITableViewCell {
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

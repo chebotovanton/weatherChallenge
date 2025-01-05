@@ -11,12 +11,13 @@ import UIKit
 final class ForecastView: UIView, UICollectionViewDataSource {
     private let cellReuseIdentifier = "cellReuseIdentifier"
     private let collectionView: UICollectionView
-    private var viewData: ForecastData?
+    private var forecastData: ForecastData?
     
     override init(frame: CGRect) {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 120, height: 120)
+        layout.itemSize = CGSize(width: 90, height: 120)
+        layout.minimumInteritemSpacing = 8
         self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         
         super.init(frame: frame)
@@ -32,53 +33,32 @@ final class ForecastView: UIView, UICollectionViewDataSource {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(viewData: ForecastData) {
-        self.viewData = viewData
+    func configure(forecastData: ForecastData) {
+        self.forecastData = forecastData
         collectionView.reloadData()
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.viewData?.list.count ?? 0
+        return self.forecastData?.list.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath)
         
         guard let forecastItemCell = cell as? ForecastItemViewCell,
-              let forecastItems = self.viewData?.list,
+              let forecastItems = self.forecastData?.list,
               indexPath.item < forecastItems.count else { return cell }
         
         let forecastItem = forecastItems[indexPath.item]
-        forecastItemCell.configure(forecastItem: forecastItem)
+        // WIP: ForecastView shouldn't know about the viewModel creation
+        let viewModel = ForecastItemCellViewModel(
+            forecastItem: forecastItem,
+            tempFormatter: TemperatureFormatter(),
+            timeFormatter: TimestampFormatter()
+        )
+        forecastItemCell.configure(viewModel: viewModel)
         
         return forecastItemCell
     }
 }
 
-final class ForecastItemViewCell: UICollectionViewCell {
-    private let mainLabel = UILabel()
-    private let tempLabel = UILabel()
-    private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(
-            arrangedSubviews: [
-                mainLabel,
-                tempLabel
-            ]
-        )
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        return stackView
-    }()
-    
-    func configure(forecastItem: ForecastItem) {
-        if stackView.superview == nil {
-            addSubview(stackView)
-            stackView.pinToSuperviewEdges()
-        }
-        
-        mainLabel.text = forecastItem.weather.first?.main ?? "Undefined"
-        tempLabel.text = String(forecastItem.main.temp)
-    }
-}
-
-// WIP: Limit the number of forecast items. How to get daily items, not 3h ones?

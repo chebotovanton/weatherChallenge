@@ -10,6 +10,7 @@ import UIKit
 struct ForecastItem: Decodable {
     struct Weather: Decodable {
         let main: String
+        let icon: String
     }
     
     struct Main: Decodable {
@@ -56,7 +57,6 @@ final class ForecastCell: UITableViewCell {
     
     private func configureAppearance() {
         self.selectionStyle = .none
-        self.backgroundColor = .green
         
         addSubview(statusLabel)
         statusLabel.centerInSuperview()
@@ -78,7 +78,7 @@ final class ForecastCell: UITableViewCell {
         case .loaded(let forecastData):
             self.statusLabel.isHidden = true
             self.forecastView.isHidden = false
-            self.forecastView.configure(viewData: forecastData)
+            self.forecastView.configure(forecastData: forecastData)
         }
     }
 }
