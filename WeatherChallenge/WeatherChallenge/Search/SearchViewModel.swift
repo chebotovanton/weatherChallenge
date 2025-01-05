@@ -27,10 +27,11 @@ final class SearchViewModel: SearchViewModelProtocol {
     private let router: SearchRouterProtocol
     private let searchService: LocationSearchServiceProtocol
     
-    // TODO: We should introduce a local protocol for favorites. This will allow us to move FavoritesService into a separate module
+    // TODO: We should introduce a locally defined protocol for favorites. This will allow us to move FavoritesService into a separate module
     private let favoritesService: FavoritesServiceProtocol
     private var debounceTimer: Timer?
-    
+    private var lastSearchQuery: String?
+
     init(
         router: SearchRouterProtocol,
         searchService: LocationSearchServiceProtocol,
@@ -43,7 +44,7 @@ final class SearchViewModel: SearchViewModelProtocol {
         loadFavorites()
     }
 
-    // TODO: There is no conflict resolving between initial favorites loading and active searches, sorry
+    // TODO: There is no conflict resolution between initial favorites loading and active searches, sorry
     private func loadFavorites() {
         viewState.value = .loading
         
@@ -64,6 +65,7 @@ final class SearchViewModel: SearchViewModelProtocol {
     }
     
     func searchQueryChanged(text: String?) {
+        lastSearchQuery = text
         debounceTimer?.invalidate()
         
         guard let text = text, text.count > 1 else {
@@ -103,9 +105,10 @@ final class SearchViewModel: SearchViewModelProtocol {
     }
 }
 
-// WIP: This unnecessarily reloads the screen every time after dismissing the modal
 extension SearchViewModel: LocationDetailsRouterDelegateProtocol {
     func didDismissLocationDetails() {
-        loadFavorites()
+        if (lastSearchQuery ?? "").count == 0 {
+            loadFavorites()
+        }
     }
 }
