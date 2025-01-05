@@ -10,15 +10,18 @@ import UIKit
 final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
     private let currentWeatherCellViewModelFactory: CurrentWeatherCellViewModelFactoryProtocol
     private let forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol
+    private let forecastItemCellViewModelFactory: ForecastItemCellViewModelFactoryProtocol
     private let favoritesService: FavoritesServiceProtocol
     
     init(
         currentWeatherCellViewModelFactory: CurrentWeatherCellViewModelFactoryProtocol,
         forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol,
+        forecastItemCellViewModelFactory: ForecastItemCellViewModelFactoryProtocol,
         favoritesService: FavoritesServiceProtocol
     ) {
         self.currentWeatherCellViewModelFactory = currentWeatherCellViewModelFactory
         self.forecastCellViewModelFactory = forecastCellViewModelFactory
+        self.forecastItemCellViewModelFactory = forecastItemCellViewModelFactory
         self.favoritesService = favoritesService
     }
     
@@ -32,7 +35,8 @@ final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
         )
         let forecastItem = ForecastTableItem(
             location: location,
-            forecastCellViewModelFactory: forecastCellViewModelFactory
+            forecastCellViewModelFactory: forecastCellViewModelFactory,
+            forecastItemCellViewModelFactory: forecastItemCellViewModelFactory
         )
         
         let router = LocationDetailsRouter(
