@@ -12,55 +12,45 @@ final class SearchResultCell: UITableViewCell {
     static let preferredCellHeight: CGFloat = 90
     
     private let contentStackView = UIStackView()
-    private let weatherIcon = UIImageView()
+    private let locationIcon = UIImageView(image: UIImage(systemName: "location.square"))
     private let locationName = UILabel()
-    private let currentTime = UILabel()
-    private let temperature = UILabel()
-    private let weatherDescription = UILabel()
+    private let countryName = UILabel()
+    private let stateName = UILabel()
     
     func configure(location: Location) {
-        addStackViewIfNeeded()
+        setupStackViewIfNeeded()
         
-        weatherIcon.image = UIImage(systemName: "cloud.rain")
         locationName.text = location.name
-        currentTime.text = "09:41"
-        temperature.text = "+11"
-        weatherDescription.text = "Cloudy"
+        countryName.text = location.country
+        stateName.text = location.state
     }
     
-    private func addStackViewIfNeeded() {
+    private func setupStackViewIfNeeded() {
         guard contentStackView.superview == nil else { return }
         
         addSubview(contentStackView)
-        contentStackView.pinToSuperviewEdges()
+        contentStackView.pinToSuperviewEdges(insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
         
         contentStackView.axis = .horizontal
         contentStackView.distribution = .equalSpacing
+        contentStackView.alignment = .center
         
-        let nameAndTimeStack = UIStackView(
+        let nameAndCountryStack = UIStackView(
             arrangedSubviews: [
                 locationName,
-                currentTime
+                countryName,
+                stateName
             ]
         )
-        nameAndTimeStack.axis = .vertical
+        nameAndCountryStack.axis = .vertical
+        nameAndCountryStack.distribution = .equalSpacing
+        nameAndCountryStack.alignment = .trailing
+                
+        contentStackView.addArrangedSubview(locationIcon)
+        contentStackView.addArrangedSubview(nameAndCountryStack)
         
-        let tempStack = UIStackView(
-            arrangedSubviews: [
-                temperature,
-                weatherDescription
-            ]
-        )
-        tempStack.axis = .vertical
-        
-        contentStackView.addArrangedSubview(weatherIcon)
-        contentStackView.addArrangedSubview(nameAndTimeStack)
-        contentStackView.addArrangedSubview(tempStack)
+        locationName.font = UIFont.preferredFont(forTextStyle: .headline)
+        countryName.font = UIFont.preferredFont(forTextStyle: .subheadline)
+        stateName.font = UIFont.preferredFont(forTextStyle: .subheadline)
     }
 }
-
-// WIP: Weather icon
-// WIP: Location name
-// WIP: Local time
-// WIP: Temperature
-// WIP: Weather description

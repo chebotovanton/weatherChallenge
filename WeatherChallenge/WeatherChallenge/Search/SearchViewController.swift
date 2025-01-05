@@ -10,6 +10,7 @@ import UIKit
 struct Location: Equatable, Codable {
     let name: String
     let country: String
+    let state: String
     let lat: Double
     let lon: Double
 }
