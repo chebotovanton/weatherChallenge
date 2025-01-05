@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import UIKit
 import Combine
 
 protocol LocationDetailsRouterProtocol {
+    func setPresentingViewController(vc: UIViewController)
     func goBack()
 }
 

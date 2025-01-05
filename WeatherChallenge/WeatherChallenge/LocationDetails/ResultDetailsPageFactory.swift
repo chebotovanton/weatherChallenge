@@ -28,7 +28,7 @@ final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
     func createResultDetailsController(
         location: Location,
         locationDetailsRouterDelegate: LocationDetailsRouterDelegateProtocol
-    ) -> UIViewController {
+    ) -> (UIViewController, LocationDetailsRouterProtocol) {
         let currentWeatherItem = CurrentWeatherTableItem(
             location: location,
             currentWeatherCellViewModelFactory: currentWeatherCellViewModelFactory
@@ -58,6 +58,6 @@ final class ResultDetailsPageFactory: ResultDetailsPageFactoryProtocol {
         
         router.presentedViewController = viewController
         
-        return viewController
+        return (viewController, router)
     }
 }

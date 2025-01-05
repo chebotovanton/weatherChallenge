@@ -11,7 +11,7 @@ protocol LocationDetailsRouterDelegateProtocol: AnyObject {
     func didDismissLocationDetails()
 }
 
-final class LocationDetailsRouter: LocationDetailsRouterProtocol {
+final class LocationDetailsRouter: NSObject, LocationDetailsRouterProtocol {
     var presentedViewController: UIViewController?
     weak var delegate: LocationDetailsRouterDelegateProtocol?
     
@@ -20,10 +20,20 @@ final class LocationDetailsRouter: LocationDetailsRouterProtocol {
     ) {
         self.delegate = delegate
     }
-        
+
+    func setPresentingViewController(vc: UIViewController) {
+        vc.presentedViewController?.presentationController?.delegate = self
+    }
+
     func goBack() {
         presentedViewController?.dismiss(animated: true) { [weak self] in
             self?.delegate?.didDismissLocationDetails()
         }
+    }
+}
+
+extension LocationDetailsRouter: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        delegate?.didDismissLocationDetails()
     }
 }
