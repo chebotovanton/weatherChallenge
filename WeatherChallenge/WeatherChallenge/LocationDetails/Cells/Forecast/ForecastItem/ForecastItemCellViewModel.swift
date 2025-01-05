@@ -45,7 +45,8 @@ final class ForecastItemCellViewModel: ForecastItemCellViewModelProtocol {
         )
         self.viewData = CurrentValueSubject(initialViewData)
     }
-    
+    // TODO: There's an obvious code duplication with WeatherIconLoadingService. It doesn't support loading cancellation since it has now way to distinguish existing requests
+    // TODO: The solution could be based on providing unique identifiers for each image loading request, but I'm running out of time here 😅
     func startLoadingImage() {
         guard let iconString = forecastItem.weather.first?.icon else { return }
         let urlString = String(format: Self.imageUrl, iconString)
