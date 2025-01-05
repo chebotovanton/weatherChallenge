@@ -15,6 +15,7 @@ final class ForecastTableItem: WeatherItemProtocol {
     private let forecastCellIdentifier = "forecastCellIdentifier"
     private let location: Location
     private let forecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol
+    private var cellViewModel: ForecastCellViewModelProtocol?
     
     init(
         location: Location,
@@ -27,16 +28,17 @@ final class ForecastTableItem: WeatherItemProtocol {
     func registerCell(tableView: UITableView) {
         tableView.register(ForecastCell.self, forCellReuseIdentifier: forecastCellIdentifier)
     }
-    
+
     func preferredCellHeight() -> CGFloat { 120 }
-    
+
     func createCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: forecastCellIdentifier, for: indexPath)
         guard let currentWeatherCell = cell as? ForecastCell else { return cell }
-        
-        // WIP: Do I wanna keep the view model reference and reuse it on cell reuse?
-        let viewModel = forecastCellViewModelFactory.createForecastCellViewModelFactory(location: location)
+
+        // TODO: This approach will make sense if we have multiple similar items, reuse cells, but don't want to reload data
+        let viewModel = cellViewModel ?? forecastCellViewModelFactory.createForecastCellViewModelFactory(location: location)
         currentWeatherCell.configure(viewModel: viewModel)
+        cellViewModel = viewModel
         
         return currentWeatherCell
     }
