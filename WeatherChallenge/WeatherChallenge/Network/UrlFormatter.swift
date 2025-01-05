@@ -9,7 +9,6 @@ protocol UrlFormatterProtocol {
     func urlString(location: Location) -> String
 }
 
-// WIP: How to support all the url formats? The one for the search request?
 final class UrlFormatter: UrlFormatterProtocol {
     private let urlFormat: String
     private let apiKeyProvider: ApiKeyProviderProtocol

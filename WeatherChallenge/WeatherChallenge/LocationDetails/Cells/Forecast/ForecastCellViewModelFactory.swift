@@ -8,6 +8,7 @@
 import Foundation
 
 final class ForecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol {
+    
     private let urlFormatter: UrlFormatterProtocol
     private let urlSession: URLSession
     
@@ -19,7 +20,7 @@ final class ForecastCellViewModelFactory: ForecastCellViewModelFactoryProtocol {
         self.urlSession = urlSession
     }
     
-    func createForecastCellViewModelFactory(location: Location) -> ForecastCellViewModel<NetworkService<ForecastData>> {
+    func createForecastCellViewModelFactory(location: Location) -> any ForecastCellViewModelProtocol {
         let forecastLoadingService = NetworkService<ForecastData>(
             urlFormatter: urlFormatter,
             urlSession: urlSession

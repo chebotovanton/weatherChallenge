@@ -105,6 +105,7 @@ final class SearchViewModel: SearchViewModelProtocol {
     }
 }
 
+// WIP: This unnecessarily reloads the screen every time after dismissing the modal
 extension SearchViewModel: LocationDetailsRouterDelegateProtocol {
     func didDismissLocationDetails() {
         loadFavorites()

@@ -8,7 +8,6 @@
 import UIKit
 
 protocol LocationDetailsViewModelProtocol {
-    // WIP: Is this the most refined approach?
     var favoriteButtonTitle: Observable<String> { get }
     var viewData: LocationDetailsViewData { get }
     

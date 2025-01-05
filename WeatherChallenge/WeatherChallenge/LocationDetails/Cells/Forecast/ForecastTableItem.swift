@@ -8,8 +8,7 @@
 import UIKit
 
 protocol ForecastCellViewModelFactoryProtocol {
-    // WIP: Do I have to expose the type?
-    func createForecastCellViewModelFactory(location: Location) -> ForecastCellViewModel<NetworkService<ForecastData>>
+    func createForecastCellViewModelFactory(location: Location) -> any ForecastCellViewModelProtocol
 }
 
 final class ForecastTableItem: WeatherItemProtocol {

@@ -19,7 +19,7 @@ final class CurrentWeatherCellViewModelFactory: CurrentWeatherCellViewModelFacto
         self.urlSession = urlSession
     }
     
-    func createCurrentWeatherViewModelFactory(location: Location) -> CurrentWeatherCellViewModel<NetworkService<CurrentWeatherData>> {
+    func createCurrentWeatherViewModelFactory(location: Location) -> any CurrentWeatherCellViewModelProtocol {
         let weatherLoadingService = NetworkService<CurrentWeatherData>(
             urlFormatter: urlFormatter,
             urlSession: urlSession

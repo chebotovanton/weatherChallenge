@@ -7,8 +7,8 @@
 
 import Foundation
 
-// WIP: Move to a Tools framework?
-// WIP: Can I simplify/update this?
+// TODO: This should be moved to a Tools module and imported everywhere to be used
+// WIP: Can I simplify/update this? Let the observers keep the reference. So the Observable doesn't know who obsertves it
 final class Observable<T> {
     typealias ObserverBlock = (_ newValue: T, _ oldValue: T) -> Void
     

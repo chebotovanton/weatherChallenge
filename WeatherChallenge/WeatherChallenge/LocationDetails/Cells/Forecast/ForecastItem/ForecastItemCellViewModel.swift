@@ -44,7 +44,7 @@ final class ForecastItemCellViewModel: ForecastItemCellViewModelProtocol {
     }
     
     func startLoadingImage() {
-        // WIP: Inject everything here
+        // WIP: Inject URLSession, limit the number of parallel loads
         guard let iconString = forecastItem.weather.first?.icon else { return }
         let urlString = String(format: Self.imageUrl, iconString)
         guard let url = URL(string: urlString) else { return }
