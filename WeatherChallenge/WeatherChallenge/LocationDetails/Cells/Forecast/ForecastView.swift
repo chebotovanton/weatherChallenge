@@ -11,7 +11,7 @@ import UIKit
 final class ForecastView: UIView, UICollectionViewDataSource {
     private let cellReuseIdentifier = "cellReuseIdentifier"
     private let collectionView: UICollectionView
-    private var viewData: ForecastData?
+    private var forecastData: ForecastData?
     
     override init(frame: CGRect) {
         let layout = UICollectionViewFlowLayout()
@@ -33,75 +33,28 @@ final class ForecastView: UIView, UICollectionViewDataSource {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(viewData: ForecastData) {
-        self.viewData = viewData
+    func configure(forecastData: ForecastData) {
+        self.forecastData = forecastData
         collectionView.reloadData()
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.viewData?.list.count ?? 0
+        return self.forecastData?.list.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath)
         
         guard let forecastItemCell = cell as? ForecastItemViewCell,
-              let forecastItems = self.viewData?.list,
+              let forecastItems = self.forecastData?.list,
               indexPath.item < forecastItems.count else { return cell }
         
         let forecastItem = forecastItems[indexPath.item]
-        forecastItemCell.configure(forecastItem: forecastItem)
+        // WIP: ForecastView shouldn't know about the viewModel creation
+        let viewModel = ForecastItemCellViewModel(forecastItem: forecastItem)
+        forecastItemCell.configure(viewModel: viewModel)
         
         return forecastItemCell
     }
 }
 
-final class ForecastItemViewCell: UICollectionViewCell {
-    private let mainLabel = UILabel()
-    private let tempLabel = UILabel()
-    
-    private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(
-            arrangedSubviews: [
-                mainLabel,
-                tempLabel
-            ]
-        )
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        return stackView
-    }()
-    
-    func configure(forecastItem: ForecastItem) {
-        setupStackViewIfNeeded()
-        
-        mainLabel.text = forecastItem.weather.first?.main ?? "Undefined"
-        tempLabel.text = TemperatureFormatter.temperatureDescription(temp: forecastItem.main.temp)
-    }
-    
-    private func setupStackViewIfNeeded() {
-        guard stackView.superview == nil else { return }
-
-        addSubview(stackView)
-        stackView.pinToSuperviewEdges(insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8))
-        
-        backgroundColor = .systemGray6
-        layer.cornerRadius = 8
-        
-        tempLabel.font = UIFont.preferredFont(forTextStyle: .title1)
-    }
-}
-
-// WIP: Add tests for this
-final class TemperatureFormatter {
-    static func temperatureDescription(temp: Float) -> String {
-        let result = String(Int(temp))
-        if temp > 1 {
-            return "+" + result
-        } else {
-            return result
-        }
-    }
-}
-
-// WIP: Limit the number of forecast items. How to get daily items, not 3h ones?
