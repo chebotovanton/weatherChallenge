@@ -80,7 +80,6 @@ final class CurrentWeatherView: UIView {
     }
 
     func configure(viewData: ViewData) {
-        // WIP: Load the image somehow
         iconView.image = viewData.icon
         descriptionLabel.text = viewData.weatherDescription
         tempLabel.text = viewData.tempDescription

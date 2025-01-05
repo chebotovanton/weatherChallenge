@@ -8,9 +8,6 @@
 import Foundation
 import Combine
 
-// WIP: Get rid of this import?
-import UIKit
-
 final class CurrentWeatherCellViewModel<CurrentWeatherLoader>: CurrentWeatherCellViewModelProtocol
 where CurrentWeatherLoader: NetworkServiceProtocol,
       CurrentWeatherLoader.ReturnType == CurrentWeatherData {
@@ -19,15 +16,18 @@ where CurrentWeatherLoader: NetworkServiceProtocol,
     private let location: Location
     private let weatherLoadingService: CurrentWeatherLoader
     private let tempFormatter: TemperatureFormatterProtocol
+    private let iconLoadingService: WeatherIconLoadingServiceProtocol
 
     init(
         location: Location,
         weatherLoadingService: CurrentWeatherLoader,
-        tempFormatter: TemperatureFormatterProtocol
+        tempFormatter: TemperatureFormatterProtocol,
+        iconLoadingService: WeatherIconLoadingServiceProtocol
     ) {
         self.location = location
         self.weatherLoadingService = weatherLoadingService
         self.tempFormatter = tempFormatter
+        self.iconLoadingService = iconLoadingService
     }
     
     func startLoadingData() {
@@ -69,14 +69,10 @@ where CurrentWeatherLoader: NetworkServiceProtocol,
 
     private let imageUrl = "https://openweathermap.org/img/wn/%@@2x.png"
 
-    // WIP: Inject an imageLoading service to avoid code duplication
     private func loadWeatherImage(iconString: String, existingViewData: CurrentWeatherView.ViewData) {
-        let urlString = String(format: imageUrl, iconString)
-        guard let url = URL(string: urlString) else { return }
-        let task = URLSession(configuration: .default).dataTask(with: URLRequest(url: url)) { [weak self] data, _, _ in
-            guard let self = self,
-                  let data = data,
-                  let image = UIImage(data: data) else { return }
+        Task { [weak self] in
+            guard let self = self else { return }
+            guard let image = await iconLoadingService.loadIcon(iconString: iconString) else { return }
             viewData.value = .loaded(
                 CurrentWeatherView.ViewData(
                     highLowViewData: existingViewData.highLowViewData,
@@ -86,6 +82,5 @@ where CurrentWeatherLoader: NetworkServiceProtocol,
                 )
             )
         }
-        task.resume()
     }
 }
