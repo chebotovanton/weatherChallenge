@@ -61,6 +61,8 @@ final class LocationDetailsViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         
+        tableView.separatorStyle = .none
+        
         self.view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true

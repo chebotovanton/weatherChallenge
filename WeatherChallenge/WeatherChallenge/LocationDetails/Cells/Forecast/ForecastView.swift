@@ -16,7 +16,8 @@ final class ForecastView: UIView, UICollectionViewDataSource {
     override init(frame: CGRect) {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 120, height: 120)
+        layout.itemSize = CGSize(width: 90, height: 120)
+        layout.minimumInteritemSpacing = 8
         self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         
         super.init(frame: frame)
@@ -58,6 +59,7 @@ final class ForecastView: UIView, UICollectionViewDataSource {
 final class ForecastItemViewCell: UICollectionViewCell {
     private let mainLabel = UILabel()
     private let tempLabel = UILabel()
+    
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView(
             arrangedSubviews: [
@@ -71,13 +73,34 @@ final class ForecastItemViewCell: UICollectionViewCell {
     }()
     
     func configure(forecastItem: ForecastItem) {
-        if stackView.superview == nil {
-            addSubview(stackView)
-            stackView.pinToSuperviewEdges()
-        }
+        setupStackViewIfNeeded()
         
         mainLabel.text = forecastItem.weather.first?.main ?? "Undefined"
-        tempLabel.text = String(forecastItem.main.temp)
+        tempLabel.text = TemperatureFormatter.temperatureDescription(temp: forecastItem.main.temp)
+    }
+    
+    private func setupStackViewIfNeeded() {
+        guard stackView.superview == nil else { return }
+
+        addSubview(stackView)
+        stackView.pinToSuperviewEdges(insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8))
+        
+        backgroundColor = .systemGray6
+        layer.cornerRadius = 8
+        
+        tempLabel.font = UIFont.preferredFont(forTextStyle: .title1)
+    }
+}
+
+// WIP: Add tests for this
+final class TemperatureFormatter {
+    static func temperatureDescription(temp: Float) -> String {
+        let result = String(Int(temp))
+        if temp > 1 {
+            return "+" + result
+        } else {
+            return result
+        }
     }
 }
 
