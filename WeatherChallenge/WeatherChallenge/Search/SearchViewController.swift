@@ -28,7 +28,7 @@ protocol SearchViewModelProtocol {
     var viewState: CurrentValueSubject<SearchViewState, Never> { get }
 }
 
-// TODO: I know it's possible to achieve a similar result with UISearchController, but I haven't worked with it in a while, and this crude manual approach seems to be working ok for our needs
+// TODO: Seems like it's possible to achieve a similar result with UISearchController, but I haven't worked with it in a while, and this crude manual approach seems to be working ok for our needs
 final class SearchViewController: UIViewController {
     
     private let viewModel: SearchViewModelProtocol
