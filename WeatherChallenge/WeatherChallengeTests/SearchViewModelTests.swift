@@ -89,7 +89,6 @@ final class SearchViewModelTests: XCTestCase {
         XCTAssertEqual(sut.viewState.value, .loading)
     }
 
-
     func test_WhenSearchQueryChanged_ThenSearchRequestSent() {
         // Given
         let sut = createSut()
@@ -300,6 +299,3 @@ private final class MockFavoritesService: FavoritesServiceProtocol {
     func addFavorite(location: WeatherChallenge.Location) async { }
     func removeFavorite(location: WeatherChallenge.Location) async { }
 }
-
-// WIP: Add more comments to Readme.md
-// WIP: Test the app manually after fixing all the tests
