@@ -15,7 +15,6 @@ protocol SearchRouterProtocol {
     )
 }
 
-// WIP: Unit tests
 final class SearchViewModel: SearchViewModelProtocol {
     // TODO: This should be injected properly via some localisation service
     private static let emptySearchRequestMessage = "Start typing to search"
@@ -23,20 +22,23 @@ final class SearchViewModel: SearchViewModelProtocol {
     var viewState: CurrentValueSubject<SearchViewState, Never> = CurrentValueSubject(
         .error(emptySearchRequestMessage)
     )
-    
+
+    private let searchDebounceDelay: TimeInterval
     private let router: SearchRouterProtocol
     private let searchService: LocationSearchServiceProtocol
-    
+
     // TODO: We should introduce a locally defined protocol for favorites. This will allow us to move FavoritesService into a separate module
     private let favoritesService: FavoritesServiceProtocol
     private var debounceTimer: Timer?
     private var lastSearchQuery: String?
 
     init(
+        searchDebounceDelay: TimeInterval,
         router: SearchRouterProtocol,
         searchService: LocationSearchServiceProtocol,
         favoritesService: FavoritesServiceProtocol
     ) {
+        self.searchDebounceDelay = searchDebounceDelay
         self.router = router
         self.searchService = searchService
         self.favoritesService = favoritesService
@@ -73,14 +75,13 @@ final class SearchViewModel: SearchViewModelProtocol {
             return
         }
 
-        debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
+        let debounceBlock = { [weak self] in
             guard let self = self else { return }
-            
             viewState.value = .loading
             Task { [weak self] in
                 guard let self = self else { return }
                 let result = await searchService.search(query: text)
-                
+
                 let newState: SearchViewState = {
                     switch result {
                     case .success(let searchResults):
@@ -89,11 +90,17 @@ final class SearchViewModel: SearchViewModelProtocol {
                         return .error(error.errorDescription)
                     }
                 }()
-                
-                DispatchQueue.main.async { [weak self] in
-                    self?.viewState.value = newState
-                }
+
+                viewState.value = newState
             }
+        }
+
+        if searchDebounceDelay > 0 {
+            debounceTimer = Timer.scheduledTimer(withTimeInterval: searchDebounceDelay, repeats: false) { _ in
+                debounceBlock()
+            }
+        } else {
+            debounceBlock()
         }
     }
     

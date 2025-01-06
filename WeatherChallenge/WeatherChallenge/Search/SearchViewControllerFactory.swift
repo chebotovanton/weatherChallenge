@@ -61,6 +61,7 @@ final class SearchViewControllerFactory {
         )
         
         let viewModel = SearchViewModel(
+            searchDebounceDelay: 0.3,
             router: router,
             searchService: LocationSearchService(
                 apiKeyProvider: apiKeyProvider,

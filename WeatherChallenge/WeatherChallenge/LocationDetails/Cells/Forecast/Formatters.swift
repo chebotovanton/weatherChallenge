@@ -7,7 +7,6 @@
 
 import Foundation
 
-// WIP: Add tests for this
 final class TemperatureFormatter: TemperatureFormatterProtocol {
     func temperatureDescription(temp: Float) -> String {
         let result = String(Int(temp)) + "°"
